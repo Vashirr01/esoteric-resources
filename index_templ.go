@@ -130,17 +130,25 @@ func MainTemp(resources []Resource) templ.Component {
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<!doctype html><html lang=\"en\"><head><script src=\"https://unpkg.com/htmx.org@2.0.4\" integrity=\"sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+\" crossorigin=\"anonymous\"></script><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>esoteric-resources</title></head><body><main>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<!doctype html><html lang=\"en\"><head><script src=\"https://unpkg.com/htmx.org@2.0.4\" integrity=\"sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+\" crossorigin=\"anonymous\"></script><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>esoteric-resources</title></head><body><main><h2>esoteric resources for cs/math/ml and more</h2><form id=\"add-resource\" hx-post=\"/\" hx-target=\"#resources-div\" hx-swap=\"beforeend\" hx-on-htmx-after-request=\"this.reset()\"><div class=\"form-group\"><label>Title</label> <input type=\"text\" name=\"title\" class=\"form-input\" required></div><div class=\"form-group\"><label>Description</label> <input type=\"text\" name=\"description\" class=\"form-input\" required></div><div class=\"form-group\"><label>Link</label> <input type=\"text\" name=\"link\" class=\"form-input\" required></div><div class=\"form-group\"><label>Tags</label> <input type=\"text\" name=\"tags\" class=\"form-input\" required></div><div class=\"form-group\"><label>Icon</label> <input type=\"text\" name=\"icon\" class=\"form-input\" required></div><div class=\"form-actions\"><button type=\"submit\" class=\"btn btn-submit\">Add Resource</button></div></form><div id=\"resources-div\" style=\"display: flex; gap:16px;\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, resource := range resources {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 			templ_7745c5c3_Err = ResourceCard(resource).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</main></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></main></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

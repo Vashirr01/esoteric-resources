@@ -26,9 +26,44 @@ templ MainTemp(resources[] Resource) {
     </head>
     <body>
         <main>
-        for _, resource := range resources {
-            @ResourceCard(resource)
-        }
+        <h2>esoteric resources for cs/math/ml and more</h2>
+        <form id="add-resource" 
+              hx-post="/" 
+              hx-target="#resources-div" 
+              hx-swap="beforeend" 
+              hx-on-htmx-after-request="this.reset()">
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" name="title" class="form-input" required/>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" name="description" class="form-input" required/>
+            </div>
+            <div class="form-group">
+                <label>Link</label>
+                <input type="text" name="link" class="form-input" required/>
+            </div>
+            <div class="form-group">
+                <label>Tags</label>
+                <input type="text" name="tags" class="form-input" required/>
+            </div>
+            <div class="form-group">
+                <label>Icon</label>
+                <input type="text" name="icon" class="form-input" required/>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-submit">Add Resource</button>
+            </div>
+        </form>
+
+       <div id="resources-div" style="display: flex; gap:16px;">
+                for _, resource := range resources {
+                    <div>
+                        @ResourceCard(resource)
+                    </div>
+                }
+            </div>
         </main>
     </body>
     </html>

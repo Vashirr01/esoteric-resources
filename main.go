@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/a-h/templ"
@@ -106,24 +107,20 @@ func render(c *gin.Context, status int, template templ.Component) error {
 	return template.Render(c.Request.Context(), c.Writer)
 }
 
-func postResource(c *gin.Context, r Resource) {
+func postResource(c *gin.Context) {
+	var newR Resource
+	newR.Title = c.PostForm("title")
+	newR.Description = c.PostForm("description")
+	newR.Link = c.PostForm("link")
+	newR.Tags = strings.Split(c.PostForm("tags"), ",")
+	newR.Icon = c.PostForm("icon")
+
 	insertSQL := `INSERT INTO resources (title, description, link, tags, icon) VALUES ($1, $2, $3, $4, $5);`
-	_, err := db.Exec(insertSQL, r.Title, r.Description, r.Link, pq.Array(r.Tags), r.Icon)
+	_, err := db.Exec(insertSQL, newR.Title, newR.Description, newR.Link, pq.Array(newR.Tags), newR.Icon)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-}
-
-func addResource(c *gin.Context) {
-	r := Resource{
-		Icon:        "",
-		Title:       "CS Primer",
-		Tags:        []string{"CS"},
-		Description: "Don't learn another framework, learn the foundational computer science concepts that matter",
-		Link:        "https://csprimer.com/courses/",
-	}
-	postResource(c, r)
 }
 
 func getResources(c *gin.Context) {
@@ -144,6 +141,5 @@ func getResources(c *gin.Context) {
 		resources = append(resources, r)
 	}
 
-	addResource(c)
 	render(c, 200, MainTemp(resources))
 }
