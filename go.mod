@@ -5,6 +5,8 @@ go 1.23.4
 require (
 	github.com/a-h/templ v0.3.819
 	github.com/gin-gonic/gin v1.10.0
+	github.com/joho/godotenv v1.5.1
+	github.com/lib/pq v1.10.9
 )
 
 require (
