@@ -1,6 +1,21 @@
 package main
 
-templ MainTemp() {
+templ ResourceCard(resource Resource) {
+    <a href={ templ.SafeURL(resource.Link) } target="_blank" style="text-decoration: none; color: inherit;">
+        <div style="border: 1px solid #ccc; width: 300px; padding: 16px;">
+            <h3>{ resource.Icon } { resource.Title }</h3>
+            <div>
+                for _, tag := range resource.Tags {
+                    <span style="border: 1px solid #eee; padding: 2px 6px; margin-right: 4px;">{ tag }</span>
+                }
+            </div>
+            <p>{ resource.Description }</p>
+        </div>
+    </a>
+}
+
+// Example usage in main template
+templ MainTemp(resources[] Resource) {
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -9,17 +24,12 @@ templ MainTemp() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title>esoteric-resources</title>
     </head>
-<body>
-    <header>
-        <h1>esoteric-resources: for cs/math/ml and more</h1>
-    </header>
-    <main>
-        <h2>Main Content</h2>
-        <p>This is the main section where the core content of the webpage resides.</p>
-    </main>
-    <footer>
-        <p>&copy; 2025 Your Website Name. All rights reserved.</p>
-    </footer>
-</body>
+    <body>
+        <main>
+        for _, resource := range resources {
+            @ResourceCard(resource)
+        }
+        </main>
+    </body>
     </html>
 }
