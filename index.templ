@@ -3,7 +3,14 @@ package main
 templ ResourceCard(resource Resource) {
     <a href={ templ.SafeURL(resource.Link) } target="_blank" style="text-decoration: none; color: inherit;">
         <div style="border: 1px solid #ccc; width: 300px; padding: 16px;">
-            <h3>{ resource.Icon } { resource.Title }</h3>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <img 
+                    src={ templ.SafeURL(resource.Icon) } 
+                    alt={ resource.Title + " icon" }
+                    style="width: 24px; height: 24px; object-fit: cover;"
+                />
+                <h3>{ resource.Title }</h3>
+            </div>
             <div>
                 for _, tag := range resource.Tags {
                     <span style="border: 1px solid #eee; padding: 2px 6px; margin-right: 4px;">{ tag }</span>

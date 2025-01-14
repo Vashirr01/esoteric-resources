@@ -99,6 +99,7 @@ func main() {
 	fmt.Print("hello")
 	router := gin.Default()
 	router.GET("/", getResources)
+	router.POST("/", postResource)
 	router.Run("localhost:8080")
 }
 
