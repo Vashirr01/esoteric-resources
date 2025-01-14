@@ -100,6 +100,7 @@ func main() {
 	router := gin.Default()
 	router.GET("/", getResources)
 	router.POST("/", postResource)
+	router.DELETE("/resource/:title", deleteResourceByTitle)
 	router.Run("localhost:8080")
 }
 
@@ -143,4 +144,23 @@ func getResources(c *gin.Context) {
 	}
 
 	render(c, 200, MainTemp(resources))
+}
+
+func deleteResourceByTitle(c *gin.Context) {
+	title := c.Param("title")
+	deleteSQL := `DELETE FROM resources WHERE title = $1;`
+	res, err := db.Exec(deleteSQL, title)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if rowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "album not found"})
+		return
+	}
 }

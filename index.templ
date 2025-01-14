@@ -1,12 +1,14 @@
 package main
 
 templ ResourceCard(resource Resource) {
+                <button hx-delete={"/resource/" + resource.Title}>
+                    delete
+                </button>
     <a href={ templ.SafeURL(resource.Link) } target="_blank" style="text-decoration: none; color: inherit;">
         <div style="border: 1px solid #ccc; width: 300px; padding: 16px;">
             <div style="display: flex; align-items: center; gap: 8px;">
                 <img 
-                    src={ templ.SafeURL(resource.Icon) } 
-                    alt={ resource.Title + " icon" }
+                    src={ resource.Icon } 
                     style="width: 24px; height: 24px; object-fit: cover;"
                 />
                 <h3>{ resource.Title }</h3>
