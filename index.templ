@@ -1,30 +1,35 @@
 package main
 
 templ ResourceCard(resource Resource) {
-                <button hx-delete={"/resource/" + resource.Title}>
-                    delete
-                </button>
-    <a href={ templ.SafeURL(resource.Link) } target="_blank" style="text-decoration: none; color: inherit;">
-        <div style="border: 1px solid #ccc; width: 300px; padding: 16px;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <img 
-                    src={ resource.Icon } 
-                    style="width: 24px; height: 24px; object-fit: cover;"
-                />
-                <h3>{ resource.Title }</h3>
+    <div id={ "resource-" + resource.Title } class="resource-card">
+        <button 
+            hx-delete={ "/resource/" + resource.Title }
+            hx-target={ "#resource-" + resource.Title }
+            hx-swap="outerHTML"
+            class="delete-btn">
+            delete
+        </button>
+        <a href={ templ.SafeURL(resource.Link) } target="_blank" style="text-decoration: none; color: inherit;">
+            <div style="border: 1px solid #ccc; width: 300px; padding: 16px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <img 
+                        src={ resource.Icon } 
+                        style="width: 24px; height: 24px; object-fit: cover;"
+                    />
+                    <h3>{ resource.Title }</h3>
+                </div>
+                <div>
+                    for _, tag := range resource.Tags {
+                        <span style="border: 1px solid #eee; padding: 2px 6px; margin-right: 4px;">{ tag }</span>
+                    }
+                </div>
+                <p>{ resource.Description }</p>
             </div>
-            <div>
-                for _, tag := range resource.Tags {
-                    <span style="border: 1px solid #eee; padding: 2px 6px; margin-right: 4px;">{ tag }</span>
-                }
-            </div>
-            <p>{ resource.Description }</p>
-        </div>
-    </a>
+        </a>
+    </div>
 }
 
-// Example usage in main template
-templ MainTemp(resources[] Resource) {
+templ MainTemp(resources []Resource) {
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -32,45 +37,62 @@ templ MainTemp(resources[] Resource) {
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title>esoteric-resources</title>
+        <style>
+            .resource-card {
+                position: relative;
+            }
+            .delete-btn {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                z-index: 10;
+                padding: 4px 8px;
+                background: #ff4444;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            .delete-btn:hover {
+                background: #cc0000;
+            }
+        </style>
     </head>
     <body>
         <main>
-        <h2>esoteric resources for cs/math/ml and more</h2>
-        <form id="add-resource" 
-              hx-post="/" 
-              hx-target="#resources-div" 
-              hx-swap="beforeend" 
-              hx-on-htmx-after-request="this.reset()">
-            <div class="form-group">
-                <label>Title</label>
-                <input type="text" name="title" class="form-input" required/>
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <input type="text" name="description" class="form-input" required/>
-            </div>
-            <div class="form-group">
-                <label>Link</label>
-                <input type="text" name="link" class="form-input" required/>
-            </div>
-            <div class="form-group">
-                <label>Tags</label>
-                <input type="text" name="tags" class="form-input" required/>
-            </div>
-            <div class="form-group">
-                <label>Icon</label>
-                <input type="text" name="icon" class="form-input" required/>
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="btn btn-submit">Add Resource</button>
-            </div>
-        </form>
-
-       <div id="resources-div" style="display: flex; gap:16px;">
+            <h2>esoteric resources for cs/math/ml and more</h2>
+            <form id="add-resource" 
+                  hx-post="/" 
+                  hx-swap="beforeend"
+                  hx-target="#resources-div"
+                  hx-on-htmx-after-request="this.reset()">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" name="title" class="form-input" required/>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" name="description" class="form-input" required/>
+                </div>
+                <div class="form-group">
+                    <label>Link</label>
+                    <input type="text" name="link" class="form-input" required/>
+                </div>
+                <div class="form-group">
+                    <label>Tags</label>
+                    <input type="text" name="tags" class="form-input" required/>
+                </div>
+                <div class="form-group">
+                    <label>Icon</label>
+                    <input type="text" name="icon" class="form-input" required/>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-submit">Add Resource</button>
+                </div>
+            </form>
+            <div id="resources-div" style="display: flex; gap:16px; flex-wrap: wrap;">
                 for _, resource := range resources {
-                    <div>
-                        @ResourceCard(resource)
-                    </div>
+                    @ResourceCard(resource)
                 }
             </div>
         </main>

@@ -123,6 +123,9 @@ func postResource(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	// Render just the new resource card
+	render(c, http.StatusOK, ResourceCard(newR))
 }
 
 func getResources(c *gin.Context) {
@@ -154,13 +157,17 @@ func deleteResourceByTitle(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	if rowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "album not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "resource not found"})
 		return
 	}
+
+	// Return 200 OK with no content - the element will be removed by HTMX
+	c.Status(http.StatusOK)
 }
