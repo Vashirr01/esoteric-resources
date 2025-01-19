@@ -7,23 +7,28 @@ templ ResourceCard(resource Resource) {
             hx-target={ "#resource-" + resource.Title }
             hx-swap="outerHTML"
             class="delete-btn">
-            delete
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18"></path>
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+            </svg>
         </button>
-        <a href={ templ.SafeURL(resource.Link) } target="_blank" style="text-decoration: none; color: inherit;">
-            <div style="border: 1px solid #ccc; width: 300px; padding: 16px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
+        <a href={ templ.SafeURL(resource.Link) } target="_blank" class="resource-link">
+            <div class="resource-content">
+                <div class="resource-header">
                     <img 
                         src={ resource.Icon } 
-                        style="width: 24px; height: 24px; object-fit: cover;"
+                        class="resource-icon"
+                        alt={ resource.Title }
                     />
-                    <h3>{ resource.Title }</h3>
+                    <h3 class="resource-title">{ resource.Title }</h3>
                 </div>
-                <div>
+                <div class="resource-tags">
                     for _, tag := range resource.Tags {
-                        <span style="border: 1px solid #eee; padding: 2px 6px; margin-right: 4px;">{ tag }</span>
+                        <span class="tag">{ tag }</span>
                     }
                 </div>
-                <p>{ resource.Description }</p>
+                <p class="resource-description">{ resource.Description }</p>
             </div>
         </a>
     </div>
@@ -36,66 +41,318 @@ templ MainTemp(resources []Resource) {
         <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>esoteric-resources</title>
+        <title>Esoteric Resources</title>
         <style>
+            /* Reset and base styles */
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                background-color: #0f172a;
+                color: #e2e8f0;
+                line-height: 1.6;
+                padding: 2rem;
+            }
+
+            main {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            /* Header styles */
+            h2 {
+                font-size: 2rem;
+                font-weight: 700;
+                color: #f1f5f9;
+                text-align: center;
+            }
+            h4 {
+                font-weight: 700;
+                margin-bottom: 2rem;
+                color: #f1f5f9;
+                text-align: center;
+            }
+
+
+            /* Form styles */
+            .form-container {
+                background-color: #1e293b;
+                padding: 2rem;
+                border-radius: 12px;
+                margin-bottom: 3rem;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            }
+
+            .form-group {
+                margin-bottom: 1.5rem;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 0.5rem;
+                color: #94a3b8;
+                font-size: 0.875rem;
+            }
+
+            .form-input {
+                width: 100%;
+                padding: 0.75rem;
+                background-color: #334155;
+                border: 1px solid #475569;
+                border-radius: 6px;
+                color: #f1f5f9;
+                font-size: 1rem;
+                transition: all 0.2s;
+            }
+
+            .form-input:focus {
+                outline: none;
+                border-color: #60a5fa;
+                box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+            }
+
+            .btn-submit {
+                background-color: #3b82f6;
+                color: white;
+                padding: 0.75rem 1.5rem;
+                border: none;
+                border-radius: 6px;
+                font-size: 1rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+            .btn-submit:hover {
+                background-color: #2563eb;
+            }
+
+            /* Resource card styles */
+            #resources-div {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 1.5rem;
+            }
+
             .resource-card {
                 position: relative;
+                transition: transform 0.2s;
             }
+
+            .resource-card:hover {
+                transform: translateY(-2px);
+            }
+
+            .resource-link {
+                text-decoration: none;
+                color: inherit;
+            }
+
+            .resource-content {
+                background-color: #1e293b;
+                border-radius: 12px;
+                padding: 1.5rem;
+                height: 100%;
+                border: 1px solid #334155;
+                transition: border-color 0.2s;
+            }
+
+            .resource-card:hover .resource-content {
+                border-color: #3b82f6;
+            }
+
+            .resource-header {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .resource-icon {
+                width: 32px;
+                height: 32px;
+                object-fit: cover;
+                border-radius: 6px;
+            }
+
+            .resource-title {
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: #f1f5f9;
+                margin: 0;
+            }
+
+            .resource-tags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .tag {
+                background-color: #334155;
+                color: #94a3b8;
+                padding: 0.25rem 0.75rem;
+                border-radius: 9999px;
+                font-size: 0.75rem;
+                font-weight: 500;
+            }
+
+            .resource-description {
+                color: #94a3b8;
+                font-size: 0.875rem;
+                line-height: 1.5;
+            }
+
             .delete-btn {
                 position: absolute;
-                top: 8px;
-                right: 8px;
+                top: 1rem;
+                right: 1rem;
                 z-index: 10;
-                padding: 4px 8px;
-                background: #ff4444;
+                padding: 0.5rem;
+                background-color: #ef4444;
                 color: white;
                 border: none;
-                border-radius: 4px;
+                border-radius: 6px;
                 cursor: pointer;
+                opacity: 0;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
+
+            .resource-card:hover .delete-btn {
+                opacity: 1;
+            }
+
             .delete-btn:hover {
-                background: #cc0000;
+                background-color: #dc2626;
+                transform: scale(1.05);
+            }
+
+            /* Loading states */
+            .htmx-request .btn-submit {
+                opacity: 0.7;
+                cursor: not-allowed;
+            }
+
+            .htmx-request.resource-card {
+                opacity: 0.7;
+            }
+
+            .form-container {
+                background-color: #1e293b;
+                padding: 2rem;
+                border-radius: 12px;
+                margin-bottom: 3rem;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                display: none; /* Hide form by default */
+                opacity: 0;
+                transform: translateY(-20px);
+                transition: opacity 0.3s, transform 0.3s;
+            }
+
+            .form-container.visible {
+                display: block;
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .header-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 2rem;
+            }
+
+            .add-resource-btn {
+                background-color: #3b82f6;
+                color: white;
+                padding: 0.75rem 1.5rem;
+                margin-bottom: 2rem;
+                border: none;
+                border-radius: 6px;
+                font-size: 1rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .add-resource-btn:hover {
+                background-color: #2563eb;
+                transform: translateY(-1px);
+            }
+
+            .add-resource-btn svg {
+                width: 20px;
+                height: 20px;
             }
         </style>
     </head>
     <body>
         <main>
-            <h2>esoteric resources for cs/math/ml and more</h2>
-            <form id="add-resource" 
-                  hx-post="/" 
-                  hx-swap="beforeend"
-                  hx-target="#resources-div"
-                  hx-on-htmx-after-request="this.reset()">
-                <div class="form-group">
-                    <label>Title</label>
-                    <input type="text" name="title" class="form-input" required/>
-                </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <input type="text" name="description" class="form-input" required/>
-                </div>
-                <div class="form-group">
-                    <label>Link</label>
-                    <input type="text" name="link" class="form-input" required/>
-                </div>
-                <div class="form-group">
-                    <label>Tags</label>
-                    <input type="text" name="tags" class="form-input" required/>
-                </div>
-                <div class="form-group">
-                    <label>Icon</label>
-                    <input type="text" name="icon" class="form-input" required/>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-submit">Add Resource</button>
-                </div>
-            </form>
-            <div id="resources-div" style="display: flex; gap:16px; flex-wrap: wrap;">
+            <div>
+            <h2>esoteric resources</h2>
+            <h4>:for cs/math/ml and more </h4>
+            </div>
+             <button onclick="toggleForm()" class="add-resource-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Add Resource
+                </button>
+            <div id="form-container" class="form-container">
+                <form id="add-resource" 
+                      hx-post="/" 
+                      hx-swap="beforeend"
+                      hx-target="#resources-div"
+                    hx-on-htmx-after-request="this.reset()"
+                      onsubmit="toggleForm()">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" name="title" class="form-input" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" name="description" class="form-input" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Link</label>
+                        <input type="text" name="link" class="form-input" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Tags (comma separated)</label>
+                        <input type="text" name="tags" class="form-input" placeholder="math, cs, ml" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Icon URL</label>
+                        <input type="text" name="icon" class="form-input" required/>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">Add Resource</button>
+                    </div>
+                </form>
+            </div>
+            <div id="resources-div">
                 for _, resource := range resources {
                     @ResourceCard(resource)
                 }
             </div>
         </main>
+        <script>
+            function toggleForm() {
+                const formContainer = document.getElementById('form-container');
+                formContainer.classList.toggle('visible');
+            }
+        </script>
     </body>
     </html>
 }

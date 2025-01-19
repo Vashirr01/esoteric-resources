@@ -68,7 +68,7 @@ func ResourceCard(resource Resource) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" hx-swap=\"outerHTML\" class=\"delete-btn\">delete</button> <a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" hx-swap=\"outerHTML\" class=\"delete-btn\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 6h18\"></path> <path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\"></path> <path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\"></path></svg></button> <a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -77,69 +77,82 @@ func ResourceCard(resource Resource) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" target=\"_blank\" style=\"text-decoration: none; color: inherit;\"><div style=\"border: 1px solid #ccc; width: 300px; padding: 16px;\"><div style=\"display: flex; align-items: center; gap: 8px;\"><img src=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" target=\"_blank\" class=\"resource-link\"><div class=\"resource-content\"><div class=\"resource-header\"><img src=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(resource.Icon)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 16, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 20, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" style=\"width: 24px; height: 24px; object-fit: cover;\"><h3>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"resource-icon\" alt=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(resource.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 19, Col: 40}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 22, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</h3></div><div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\"><h3 class=\"resource-title\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(resource.Title)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 24, Col: 63}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</h3></div><div class=\"resource-tags\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, tag := range resource.Tags {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<span style=\"border: 1px solid #eee; padding: 2px 6px; margin-right: 4px;\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<span class=\"tag\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var8 string
-			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(tag)
+			var templ_7745c5c3_Var9 string
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(tag)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 23, Col: 104}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 28, Col: 47}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><p>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><p class=\"resource-description\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(resource.Description)
+		var templ_7745c5c3_Var10 string
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(resource.Description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 26, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 31, Col: 70}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</p></div></a></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</p></div></a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -163,12 +176,12 @@ func MainTemp(resources []Resource) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var10 == nil {
-			templ_7745c5c3_Var10 = templ.NopComponent
+		templ_7745c5c3_Var11 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var11 == nil {
+			templ_7745c5c3_Var11 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<!doctype html><html lang=\"en\"><head><script src=\"https://unpkg.com/htmx.org@2.0.4\" integrity=\"sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+\" crossorigin=\"anonymous\"></script><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>esoteric-resources</title><style>\n            .resource-card {\n                position: relative;\n            }\n            .delete-btn {\n                position: absolute;\n                top: 8px;\n                right: 8px;\n                z-index: 10;\n                padding: 4px 8px;\n                background: #ff4444;\n                color: white;\n                border: none;\n                border-radius: 4px;\n                cursor: pointer;\n            }\n            .delete-btn:hover {\n                background: #cc0000;\n            }\n        </style></head><body><main><h2>esoteric resources for cs/math/ml and more</h2><form id=\"add-resource\" hx-post=\"/\" hx-swap=\"beforeend\" hx-target=\"#resources-div\" hx-on-htmx-after-request=\"this.reset()\"><div class=\"form-group\"><label>Title</label> <input type=\"text\" name=\"title\" class=\"form-input\" required></div><div class=\"form-group\"><label>Description</label> <input type=\"text\" name=\"description\" class=\"form-input\" required></div><div class=\"form-group\"><label>Link</label> <input type=\"text\" name=\"link\" class=\"form-input\" required></div><div class=\"form-group\"><label>Tags</label> <input type=\"text\" name=\"tags\" class=\"form-input\" required></div><div class=\"form-group\"><label>Icon</label> <input type=\"text\" name=\"icon\" class=\"form-input\" required></div><div class=\"form-actions\"><button type=\"submit\" class=\"btn btn-submit\">Add Resource</button></div></form><div id=\"resources-div\" style=\"display: flex; gap:16px; flex-wrap: wrap;\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<!doctype html><html lang=\"en\"><head><script src=\"https://unpkg.com/htmx.org@2.0.4\" integrity=\"sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+\" crossorigin=\"anonymous\"></script><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Esoteric Resources</title><style>\n            /* Reset and base styles */\n            * {\n                margin: 0;\n                padding: 0;\n                box-sizing: border-box;\n            }\n\n            body {\n                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\n                background-color: #0f172a;\n                color: #e2e8f0;\n                line-height: 1.6;\n                padding: 2rem;\n            }\n\n            main {\n                max-width: 1200px;\n                margin: 0 auto;\n            }\n\n            /* Header styles */\n            h2 {\n                font-size: 2rem;\n                font-weight: 700;\n                color: #f1f5f9;\n                text-align: center;\n            }\n            h4 {\n                font-weight: 700;\n                margin-bottom: 2rem;\n                color: #f1f5f9;\n                text-align: center;\n            }\n\n\n            /* Form styles */\n            .form-container {\n                background-color: #1e293b;\n                padding: 2rem;\n                border-radius: 12px;\n                margin-bottom: 3rem;\n                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);\n            }\n\n            .form-group {\n                margin-bottom: 1.5rem;\n            }\n\n            label {\n                display: block;\n                margin-bottom: 0.5rem;\n                color: #94a3b8;\n                font-size: 0.875rem;\n            }\n\n            .form-input {\n                width: 100%;\n                padding: 0.75rem;\n                background-color: #334155;\n                border: 1px solid #475569;\n                border-radius: 6px;\n                color: #f1f5f9;\n                font-size: 1rem;\n                transition: all 0.2s;\n            }\n\n            .form-input:focus {\n                outline: none;\n                border-color: #60a5fa;\n                box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);\n            }\n\n            .btn-submit {\n                background-color: #3b82f6;\n                color: white;\n                padding: 0.75rem 1.5rem;\n                border: none;\n                border-radius: 6px;\n                font-size: 1rem;\n                font-weight: 500;\n                cursor: pointer;\n                transition: background-color 0.2s;\n            }\n\n            .btn-submit:hover {\n                background-color: #2563eb;\n            }\n\n            /* Resource card styles */\n            #resources-div {\n                display: grid;\n                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));\n                gap: 1.5rem;\n            }\n\n            .resource-card {\n                position: relative;\n                transition: transform 0.2s;\n            }\n\n            .resource-card:hover {\n                transform: translateY(-2px);\n            }\n\n            .resource-link {\n                text-decoration: none;\n                color: inherit;\n            }\n\n            .resource-content {\n                background-color: #1e293b;\n                border-radius: 12px;\n                padding: 1.5rem;\n                height: 100%;\n                border: 1px solid #334155;\n                transition: border-color 0.2s;\n            }\n\n            .resource-card:hover .resource-content {\n                border-color: #3b82f6;\n            }\n\n            .resource-header {\n                display: flex;\n                align-items: center;\n                gap: 1rem;\n                margin-bottom: 1rem;\n            }\n\n            .resource-icon {\n                width: 32px;\n                height: 32px;\n                object-fit: cover;\n                border-radius: 6px;\n            }\n\n            .resource-title {\n                font-size: 1.25rem;\n                font-weight: 600;\n                color: #f1f5f9;\n                margin: 0;\n            }\n\n            .resource-tags {\n                display: flex;\n                flex-wrap: wrap;\n                gap: 0.5rem;\n                margin-bottom: 1rem;\n            }\n\n            .tag {\n                background-color: #334155;\n                color: #94a3b8;\n                padding: 0.25rem 0.75rem;\n                border-radius: 9999px;\n                font-size: 0.75rem;\n                font-weight: 500;\n            }\n\n            .resource-description {\n                color: #94a3b8;\n                font-size: 0.875rem;\n                line-height: 1.5;\n            }\n\n            .delete-btn {\n                position: absolute;\n                top: 1rem;\n                right: 1rem;\n                z-index: 10;\n                padding: 0.5rem;\n                background-color: #ef4444;\n                color: white;\n                border: none;\n                border-radius: 6px;\n                cursor: pointer;\n                opacity: 0;\n                transition: all 0.2s;\n                display: flex;\n                align-items: center;\n                justify-content: center;\n            }\n\n            .resource-card:hover .delete-btn {\n                opacity: 1;\n            }\n\n            .delete-btn:hover {\n                background-color: #dc2626;\n                transform: scale(1.05);\n            }\n\n            /* Loading states */\n            .htmx-request .btn-submit {\n                opacity: 0.7;\n                cursor: not-allowed;\n            }\n\n            .htmx-request.resource-card {\n                opacity: 0.7;\n            }\n\n            .form-container {\n                background-color: #1e293b;\n                padding: 2rem;\n                border-radius: 12px;\n                margin-bottom: 3rem;\n                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);\n                display: none; /* Hide form by default */\n                opacity: 0;\n                transform: translateY(-20px);\n                transition: opacity 0.3s, transform 0.3s;\n            }\n\n            .form-container.visible {\n                display: block;\n                opacity: 1;\n                transform: translateY(0);\n            }\n\n            .header-container {\n                display: flex;\n                justify-content: space-between;\n                align-items: center;\n                margin-bottom: 2rem;\n            }\n\n            .add-resource-btn {\n                background-color: #3b82f6;\n                color: white;\n                padding: 0.75rem 1.5rem;\n                margin-bottom: 2rem;\n                border: none;\n                border-radius: 6px;\n                font-size: 1rem;\n                font-weight: 500;\n                cursor: pointer;\n                transition: all 0.2s;\n                display: flex;\n                align-items: center;\n                gap: 0.5rem;\n            }\n\n            .add-resource-btn:hover {\n                background-color: #2563eb;\n                transform: translateY(-1px);\n            }\n\n            .add-resource-btn svg {\n                width: 20px;\n                height: 20px;\n            }\n        </style></head><body><main><div><h2>esoteric resources</h2><h4>:for cs/math/ml and more </h4></div><button onclick=\"toggleForm()\" class=\"add-resource-btn\"><svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 6v6m0 0v6m0-6h6m-6 0H6\"></path></svg> Add Resource</button><div id=\"form-container\" class=\"form-container\"><form id=\"add-resource\" hx-post=\"/\" hx-swap=\"beforeend\" hx-target=\"#resources-div\" hx-on-htmx-after-request=\"this.reset()\" onsubmit=\"toggleForm()\"><div class=\"form-group\"><label>Title</label> <input type=\"text\" name=\"title\" class=\"form-input\" required></div><div class=\"form-group\"><label>Description</label> <input type=\"text\" name=\"description\" class=\"form-input\" required></div><div class=\"form-group\"><label>Link</label> <input type=\"text\" name=\"link\" class=\"form-input\" required></div><div class=\"form-group\"><label>Tags (comma separated)</label> <input type=\"text\" name=\"tags\" class=\"form-input\" placeholder=\"math, cs, ml\" required></div><div class=\"form-group\"><label>Icon URL</label> <input type=\"text\" name=\"icon\" class=\"form-input\" required></div><div class=\"form-actions\"><button type=\"submit\" class=\"btn-submit\">Add Resource</button></div></form></div><div id=\"resources-div\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -178,7 +191,7 @@ func MainTemp(resources []Resource) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div></main></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div></main><script>\n            function toggleForm() {\n                const formContainer = document.getElementById('form-container');\n                formContainer.classList.toggle('visible');\n            }\n        </script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
