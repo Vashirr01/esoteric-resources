@@ -101,11 +101,11 @@ func main() {
 
 	fmt.Print("hello")
 	router := gin.Default()
+	router.Static("/assets", "./assets")
 	router.GET("/", getResources)
 	router.GET("/login", showLogin)
 	router.POST("/login", handleLogin)
 	router.POST("/logout", handleLogout)
-
 	protected := router.Group("/")
 	protected.Use(authMiddleware)
 	{
