@@ -188,7 +188,8 @@ templ MainTemp(resources []Resource, isAdmin bool) {
         <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Esoteric Resources</title>
+        <title>esoteric resources</title>
+        <link rel="icon" type="image/jpeg" href="/assets/favicon.jpg">
 <style>
     /* ========== Material 3 Dark Theme ========== */
     :root {
@@ -251,7 +252,85 @@ templ MainTemp(resources []Resource, isAdmin bool) {
     gap: 2rem;
     padding: 2rem 0;
 }
+.resource-header {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
 
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.2s;
+                z-index: 1000;
+            }
+
+            .modal-overlay.visible {
+                opacity: 1;
+                pointer-events: all;
+            }
+
+            .modal-content {
+                background: var(--surface-2);
+                padding: 2rem;
+                border-radius: 16px;
+                width: 90%;
+                max-width: 500px;
+                position: relative;
+                transform: translateY(-20px);
+                transition: transform 0.2s;
+            }
+
+            .modal-overlay.visible .modal-content {
+                transform: translateY(0);
+            }
+
+            .close-btn {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                background: none;
+                border: none;
+                color: var(--text-medium);
+                cursor: pointer;
+                padding: 0.5rem;
+            }
+
+            .add-resource-btn {
+                background: var(--primary);
+                color: var(--on-primary);
+                padding: 0.75rem 1.5rem;
+                border: none;
+                border-radius: 8px;
+                font-weight: 500;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin: 1rem auto;
+                transition: background-color 0.2s;
+            }
+
+            .add-resource-btn:hover {
+                background: color-mix(in srgb, var(--primary) 90%, white);
+            }
+
+            .form-actions {
+                display: flex;
+                gap: 1rem;
+                justify-content: flex-end;
+                margin-top: 1.5rem;
+            }
 .resource-card {
     background: var(--surface-2);
     border-radius: 16px;
@@ -475,15 +554,13 @@ templ MainTemp(resources []Resource, isAdmin bool) {
 </style>
 </head>
     <body class={ templ.Classes("authenticated", isAdmin) }>
-        <main>
+       <main>
             if isAdmin {
                 <div class="admin-controls">
                     <form method="POST" action="/logout">
                         <button type="submit" class="logout-btn">Logout</button>
                     </form>
                 </div>
-            } else {
-                <a href="/login" class="login-link">Admin Login</a>
             }
 
             <div>
@@ -497,45 +574,55 @@ templ MainTemp(resources []Resource, isAdmin bool) {
             </div>
 
             if isAdmin {
-                <button onclick="toggleForm()" class="add-resource-btn admin-only">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                <button onclick="toggleForm()" class="add-resource-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-6-6h12"/>
                     </svg>
                     Add Resource
                 </button>
-                <div id="form-container" class="form-container admin-only">
-                   <form id="add-resource" 
-    hx-post="/"
-    hx-swap="beforeend"
-    hx-target="#resources-div"
-    hx-on::after-request="
-        if(event.detail.successful) {
-            this.reset();
-            toggleForm();
-        }">                       <div class="form-group">
-                            <label>Title</label>
-                            <input type="text" name="title" class="form-input" required/>
-                        </div>
-                        <div class="form-group">
-                            <label>Description</label>
-                            <input type="text" name="description" class="form-input" required/>
-                        </div>
-                        <div class="form-group">
-                            <label>Link</label>
-                            <input type="text" name="link" class="form-input" required/>
-                        </div>
-                        <div class="form-group">
-                            <label>Tags (comma separated)</label>
-                            <input type="text" name="tags" class="form-input" placeholder="math, cs, ml" required/>
-                        </div>
-                        <div class="form-group">
-                            <label>Icon URL</label>
-                            <input type="text" name="icon" class="form-input" required/>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn-submit">Add Resource</button>
-                        </div>
-                    </form>
+                
+                <div id="modal-overlay" class="modal-overlay" onclick="toggleForm()">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <button class="close-btn" onclick="toggleForm()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                        <form id="add-resource" 
+                            hx-post="/"
+                            hx-swap="beforeend"
+                            hx-target="#resources-div"
+                            hx-on::after-request="
+                                if(event.detail.successful) {
+                                    this.reset();
+                                    toggleForm();
+                                }">
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" name="title" class="form-input" required/>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <input type="text" name="description" class="form-input" required/>
+                            </div>
+                            <div class="form-group">
+                                <label>Link</label>
+                                <input type="text" name="link" class="form-input" required/>
+                            </div>
+                            <div class="form-group">
+                                <label>Tags (comma separated)</label>
+                                <input type="text" name="tags" class="form-input" placeholder="math, cs, ml" required/>
+                            </div>
+                            <div class="form-group">
+                                <label>Icon URL</label>
+                                <input type="text" name="icon" class="form-input" required/>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn-submit secondary" onclick="toggleForm()">Cancel</button>
+                                <button type="submit" class="btn-submit">Add Resource</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             }
 
@@ -544,16 +631,16 @@ templ MainTemp(resources []Resource, isAdmin bool) {
                     @ResourceCard(resource, isAdmin)
                 }
             </div>
-        </main>
+        </main>        
         <script>
     document.body.addEventListener('htmx:beforeRequest', function(evt) {
         htmx.config.withCredentials = true;
     });
 
     function toggleForm() {
-        const formContainer = document.getElementById('form-container');
-        formContainer.classList.toggle('visible');
-    }
+                const overlay = document.getElementById('modal-overlay');
+                overlay.classList.toggle('visible');
+            }
 
     // Automatically hide form on page load
     document.addEventListener('DOMContentLoaded', () => {
