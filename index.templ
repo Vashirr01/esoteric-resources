@@ -1,7 +1,125 @@
 package main
 
 templ LoginPage(invalid bool) {
-    <div class="login-container">
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Admin Login - Esoteric Resources</title>
+        <style>
+            :root {
+        /* Surface Colors */
+        --surface-1: #1C1B1F;       /* Background */
+        --surface-2: #2D2B32;       /* Cards/Dialogs */
+        --surface-3: #3B3841;       /* Hover States */
+        --surface-4: #48454E;       /* Active States */
+
+        /* Primary Colors */
+        --primary: #D0BCFF;         /* Primary Brand */
+        --on-primary: #381E72;      /* Text on Primary */
+        --primary-container: #4F378B;
+        
+        /* Text Colors */
+        --text-high: #E6E1E5;       /* High Emphasis */
+        --text-medium: #C9C5CA;     /* Medium Emphasis */
+        --text-disabled: #79747E;   /* Disabled */
+
+        /* Status Colors */
+        --error: #F2B8B5;
+        --error-container: #8C1D18;
+        --success: #79DD72;
+        --warning: #FFD399;
+
+        /* Borders & Elevation */
+        --outline: #938F99;
+        --surface-variant: #49454F;
+        --elevation-1: 0 1px 3px rgba(0,0,0,0.12);
+        --elevation-2: 0 4px 6px rgba(0,0,0,0.16);
+    }
+           * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        transition: background-color 0.2s, opacity 0.2s;
+    }
+
+    body {
+        font-family: 'Roboto', system-ui, sans-serif;
+        background: var(--surface-1);
+        color: var(--text-high);
+        line-height: 1.5;
+        padding: 2rem;
+        min-height: 100vh;
+    }
+
+    a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+            
+  /* ========== Login Page Specific Styles ========== */
+   .login-container {
+    background: var(--surface-2);
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 400px;
+    margin: 4rem auto;
+    box-shadow: var(--elevation-2);
+    border: 1px solid var(--surface-variant);
+}
+
+.login-container h2 {
+    color: var(--text-high);
+    margin-bottom: 1.5rem;
+}
+
+.login-container .form-input {
+    width: 100%;
+    padding: 1rem;
+    background: var(--surface-1);
+    border: 2px solid var(--surface-variant);
+    border-radius: 8px;
+    color: var(--text-high);
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.login-container .form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.login-container .btn-submit {
+    background: var(--primary);
+    color: var(--on-primary);
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.2s;
+}
+
+.login-container .btn-submit:hover {
+    background: color-mix(in srgb, var(--primary) 90%, white);
+}
+
+.error-message {
+    color: var(--error);
+    background: var(--error-container);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}   
+        </style>
+    </head>
+    <body>
+        <div class="login-container">
         <a href="/" class="back-to-home">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M19 12H6M12 5l-7 7 7 7"/>
@@ -23,6 +141,8 @@ templ LoginPage(invalid bool) {
             <button type="submit" class="btn-submit">Login</button>
         </form>
     </div>
+    </body>
+    </html>
 }
 
 templ ResourceCard(resource Resource, isAdmin bool) {
@@ -125,26 +245,27 @@ templ MainTemp(resources []Resource, isAdmin bool) {
 
     /* ========== Resource Grid ========== */
     #resources-div {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1.5rem;
-        padding: 2rem 0;
-    }
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-auto-flow: dense;
+    gap: 2rem;
+    padding: 2rem 0;
+}
 
-    .resource-card {
-        background: var(--surface-2);
-        border-radius: 16px;
-        padding: 1.5rem;
-        position: relative;
-        box-shadow: var(--elevation-1);
-        border: 1px solid var(--surface-variant);
-    }
+.resource-card {
+    background: var(--surface-2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    position: relative;
+    box-shadow: var(--elevation-1);
+    border: 1px solid var(--surface-variant);
+}
 
-    .resource-card:hover {
-        background: var(--surface-3);
-        box-shadow: var(--elevation-2);
-        transform: translateY(-2px);
-    }
+.resource-card:hover {
+    background: var(--surface-3);
+    box-shadow: var(--elevation-2);
+    transform: translateY(-2px);
+}
 
     .resource-icon {
         width: 40px;
@@ -338,6 +459,18 @@ templ MainTemp(resources []Resource, isAdmin bool) {
     #search:focus {
         outline: none;
         border-color: var(--primary);
+    }
+   
+@media (max-width: 1200px) {
+        #resources-div {
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        #resources-div {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 </head>
