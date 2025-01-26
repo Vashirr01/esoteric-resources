@@ -11,12 +11,14 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 )
 
 var db *sql.DB
+var store *sessions.CookieStore
 
 type Resource struct {
 	Title       string
@@ -32,6 +34,7 @@ func main() {
 	if err != nil {
 		log.Printf("Warning: error loading .env file")
 	}
+	store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_SECRET")))
 
 	// First connect to default postgres database
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=postgres sslmode=disable",
@@ -99,9 +102,57 @@ func main() {
 	fmt.Print("hello")
 	router := gin.Default()
 	router.GET("/", getResources)
-	router.POST("/", postResource)
-	router.DELETE("/resource/:title", deleteResourceByTitle)
+	router.GET("/login", showLogin)
+	router.POST("/login", handleLogin)
+	router.POST("/logout", handleLogout)
+
+	protected := router.Group("/")
+	protected.Use(authMiddleware)
+	{
+		protected.POST("/", postResource)
+		protected.DELETE("/resource/:title", deleteResourceByTitle)
+	}
 	router.Run("localhost:8080")
+}
+
+func authMiddleware(c *gin.Context) {
+	session, _ := store.Get(c.Request, "session")
+	if auth, ok := session.Values["authentciated"].(bool); !ok || !auth {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	c.Next()
+}
+
+func showLogin(c *gin.Context) {
+	render(c, http.StatusOK, LoginPage(false))
+}
+
+func handleLogin(c *gin.Context) {
+	session, _ := store.Get(c.Request, "session")
+
+	if c.PostForm("password") == os.Getenv("ADMIN_PASSWORD") {
+		session.Values["authenticated"] = true
+		session.Options = &sessions.Options{
+			Path:     "/",
+			MaxAge:   86400 * 7,
+			HttpOnly: true,
+			Secure:   os.Getenv("ENVIRONMENT") == "production",
+		}
+		session.Save(c.Request, c.Writer)
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+	render(c, http.StatusOK, LoginPage(true))
+
+}
+
+func handleLogout(c *gin.Context) {
+	session, _ := store.Get(c.Request, "session")
+	session.Values["authenticated"] = false
+	session.Options.MaxAge = -1
+	session.Save(c.Request, c.Writer)
+	c.Redirect(http.StatusFound, "/")
 }
 
 func render(c *gin.Context, status int, template templ.Component) error {
@@ -110,6 +161,8 @@ func render(c *gin.Context, status int, template templ.Component) error {
 }
 
 func postResource(c *gin.Context) {
+	session, _ := store.Get(c.Request, "session")
+	isAdmin, _ := session.Values["authenticated"].(bool)
 	var newR Resource
 	newR.Title = c.PostForm("title")
 	newR.Description = c.PostForm("description")
@@ -125,10 +178,12 @@ func postResource(c *gin.Context) {
 	}
 
 	// Render just the new resource card
-	render(c, http.StatusOK, ResourceCard(newR))
+	render(c, http.StatusOK, ResourceCard(newR, isAdmin))
 }
 
 func getResources(c *gin.Context) {
+	session, _ := store.Get(c.Request, "session")
+	isAdmin, _ := session.Values["authenticated"].(bool)
 	rows, err := db.Query("SELECT title, description, link, tags, icon FROM resources")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -146,7 +201,7 @@ func getResources(c *gin.Context) {
 		resources = append(resources, r)
 	}
 
-	render(c, 200, MainTemp(resources))
+	render(c, 200, MainTemp(resources, isAdmin))
 }
 
 func deleteResourceByTitle(c *gin.Context) {
