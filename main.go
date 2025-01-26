@@ -117,7 +117,13 @@ func main() {
 
 func authMiddleware(c *gin.Context) {
 	session, _ := store.Get(c.Request, "session")
-	if auth, ok := session.Values["authentciated"].(bool); !ok || !auth {
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		// For HTMX requests
+		if c.GetHeader("HX-Request") == "true" {
+			c.Header("HX-Redirect", "/login")
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
@@ -138,13 +144,17 @@ func handleLogin(c *gin.Context) {
 			MaxAge:   86400 * 7,
 			HttpOnly: true,
 			Secure:   os.Getenv("ENVIRONMENT") == "production",
+			SameSite: http.SameSiteLaxMode,
 		}
 		session.Save(c.Request, c.Writer)
+
+		// Set HTMX headers
+		c.Header("HX-Redirect", "/")
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
-	render(c, http.StatusOK, LoginPage(true))
 
+	render(c, http.StatusOK, LoginPage(true))
 }
 
 func handleLogout(c *gin.Context) {

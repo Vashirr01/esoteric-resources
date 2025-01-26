@@ -310,6 +310,35 @@ templ MainTemp(resources []Resource, isAdmin bool) {
     .back-to-home:hover {
         color: var(--primary);
     }
+    #search-wrapper {
+        max-width: 600px;
+        margin: 1.5rem auto;
+        position: relative;
+    }
+
+    #search-wrapper label {
+        position: absolute;
+        top: -1.5rem;
+        left: 0;
+        color: var(--text-medium);
+        font-size: 0.875rem;
+    }
+
+    #search {
+        width: 100%;
+        padding: 1rem;
+        background: var(--surface-1);
+        border: 2px solid var(--surface-variant);
+        border-radius: 8px;
+        color: var(--text-high);
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+
+    #search:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
 </style>
 </head>
     <body class={ templ.Classes("authenticated", isAdmin) }>
@@ -342,13 +371,15 @@ templ MainTemp(resources []Resource, isAdmin bool) {
                     Add Resource
                 </button>
                 <div id="form-container" class="form-container admin-only">
-                    <form id="add-resource" 
-                        hx-post="/" 
-                        hx-swap="beforeend"
-                        hx-target="#resources-div"
-                        hx-on-htmx-after-request="this.reset()"
-                        onsubmit="toggleForm()">
-                        <div class="form-group">
+                   <form id="add-resource" 
+    hx-post="/"
+    hx-swap="beforeend"
+    hx-target="#resources-div"
+    hx-on::after-request="
+        if(event.detail.successful) {
+            this.reset();
+            toggleForm();
+        }">                       <div class="form-group">
                             <label>Title</label>
                             <input type="text" name="title" class="form-input" required/>
                         </div>
@@ -382,17 +413,45 @@ templ MainTemp(resources []Resource, isAdmin bool) {
             </div>
         </main>
         <script>
-            function toggleForm() {
-                const formContainer = document.getElementById('form-container');
-                formContainer.classList.toggle('visible');
-            }
+    document.body.addEventListener('htmx:beforeRequest', function(evt) {
+        htmx.config.withCredentials = true;
+    });
 
-            // Automatically hide form on page load
-            document.addEventListener('DOMContentLoaded', () => {
-                const formContainer = document.getElementById('form-container');
-                if (formContainer) formContainer.classList.remove('visible');
+    function toggleForm() {
+        const formContainer = document.getElementById('form-container');
+        formContainer.classList.toggle('visible');
+    }
+
+    // Automatically hide form on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const formContainer = document.getElementById('form-container');
+        if (formContainer) formContainer.classList.remove('visible');
+    });
+
+    // New search functionality
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('search');
+        const resourceCards = document.querySelectorAll('.resource-card');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+
+            resourceCards.forEach(card => {
+                const title = card.querySelector('.resource-title').textContent.toLowerCase();
+                const description = card.querySelector('.resource-description').textContent.toLowerCase();
+                const tags = Array.from(card.querySelectorAll('.tag'))
+                    .map(tag => tag.textContent.toLowerCase())
+                    .join(' ');
+
+                const matchesSearch = 
+                    title.includes(searchTerm) || 
+                    description.includes(searchTerm) || 
+                    tags.includes(searchTerm);
+
+                card.style.display = matchesSearch ? 'block' : 'none';
             });
-        </script>
-    </body>
+        });
+    });
+</script>    </body>
     </html>
 }
