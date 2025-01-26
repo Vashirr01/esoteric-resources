@@ -29,7 +29,7 @@ func LoginPage(invalid bool) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"login-container\"><h2>Admin Login</h2>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"login-container\"><a href=\"/\" class=\"back-to-home\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M19 12H6M12 5l-7 7 7 7\"></path></svg> Back to Resources</a><h2>Admin Login</h2>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -75,7 +75,7 @@ func ResourceCard(resource Resource, isAdmin bool) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("resource-" + resource.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 24, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 29, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -93,7 +93,7 @@ func ResourceCard(resource Resource, isAdmin bool) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs("/resource/" + resource.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 27, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 32, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -106,7 +106,7 @@ func ResourceCard(resource Resource, isAdmin bool) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("#resource-" + resource.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 28, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 33, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -133,7 +133,7 @@ func ResourceCard(resource Resource, isAdmin bool) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(resource.Icon)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 42, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 47, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -146,7 +146,7 @@ func ResourceCard(resource Resource, isAdmin bool) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(resource.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 44, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 49, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -159,7 +159,7 @@ func ResourceCard(resource Resource, isAdmin bool) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(resource.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 46, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 51, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -177,7 +177,7 @@ func ResourceCard(resource Resource, isAdmin bool) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(tag)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 50, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 55, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -195,7 +195,7 @@ func ResourceCard(resource Resource, isAdmin bool) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(resource.Description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 53, Col: 70}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.templ`, Line: 58, Col: 70}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -230,7 +230,7 @@ func MainTemp(resources []Resource, isAdmin bool) templ.Component {
 			templ_7745c5c3_Var12 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<!doctype html><html lang=\"en\"><head><script src=\"https://unpkg.com/htmx.org@2.0.4\" integrity=\"sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+\" crossorigin=\"anonymous\"></script><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Esoteric Resources</title><style>\n            /* Add admin control styles */\n            .admin-controls {\n                position: fixed;\n                top: 1rem;\n                right: 1rem;\n                display: flex;\n                gap: 1rem;\n                z-index: 1000;\n            }\n\n            .login-container {\n                max-width: 400px;\n                margin: 2rem auto;\n                padding: 2rem;\n                background-color: #1e293b;\n                border-radius: 8px;\n            }\n            .error-message {\n                color: #ef4444;\n                margin-bottom: 1rem;\n            }\n \n            .admin-only {\n                display: none;\n            }\n\n            .authenticated .admin-only {\n                display: block;\n            }\n\n            .logout-btn {\n                background: none;\n                border: 1px solid #ef4444;\n                color: #ef4444;\n                padding: 0.5rem 1rem;\n                border-radius: 6px;\n                cursor: pointer;\n                transition: all 0.2s;\n            }\n\n            .logout-btn:hover {\n                background-color: #ef4444;\n                color: white;\n            }\n\n            .login-link {\n                color: #3b82f6;\n                text-decoration: none;\n                position: fixed;\n                top: 1rem;\n                right: 1rem;\n            }\n\n            /* Existing styles remain unchanged */\n            /* ... [keep all existing style rules] ... */\n        </style></head>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<!doctype html><html lang=\"en\"><head><script src=\"https://unpkg.com/htmx.org@2.0.4\" integrity=\"sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+\" crossorigin=\"anonymous\"></script><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Esoteric Resources</title><style>\n    /* ========== Material 3 Dark Theme ========== */\n    :root {\n        /* Surface Colors */\n        --surface-1: #1C1B1F;       /* Background */\n        --surface-2: #2D2B32;       /* Cards/Dialogs */\n        --surface-3: #3B3841;       /* Hover States */\n        --surface-4: #48454E;       /* Active States */\n\n        /* Primary Colors */\n        --primary: #D0BCFF;         /* Primary Brand */\n        --on-primary: #381E72;      /* Text on Primary */\n        --primary-container: #4F378B;\n        \n        /* Text Colors */\n        --text-high: #E6E1E5;       /* High Emphasis */\n        --text-medium: #C9C5CA;     /* Medium Emphasis */\n        --text-disabled: #79747E;   /* Disabled */\n\n        /* Status Colors */\n        --error: #F2B8B5;\n        --error-container: #8C1D18;\n        --success: #79DD72;\n        --warning: #FFD399;\n\n        /* Borders & Elevation */\n        --outline: #938F99;\n        --surface-variant: #49454F;\n        --elevation-1: 0 1px 3px rgba(0,0,0,0.12);\n        --elevation-2: 0 4px 6px rgba(0,0,0,0.16);\n    }\n\n    /* ========== Base Styles ========== */\n    * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n        transition: background-color 0.2s, opacity 0.2s;\n    }\n\n    body {\n        font-family: 'Roboto', system-ui, sans-serif;\n        background: var(--surface-1);\n        color: var(--text-high);\n        line-height: 1.5;\n        padding: 2rem;\n        min-height: 100vh;\n    }\n\n    a {\n        color: var(--primary);\n        text-decoration: none;\n    }\n\n    /* ========== Resource Grid ========== */\n    #resources-div {\n        display: grid;\n        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));\n        gap: 1.5rem;\n        padding: 2rem 0;\n    }\n\n    .resource-card {\n        background: var(--surface-2);\n        border-radius: 16px;\n        padding: 1.5rem;\n        position: relative;\n        box-shadow: var(--elevation-1);\n        border: 1px solid var(--surface-variant);\n    }\n\n    .resource-card:hover {\n        background: var(--surface-3);\n        box-shadow: var(--elevation-2);\n        transform: translateY(-2px);\n    }\n\n    .resource-icon {\n        width: 40px;\n        height: 40px;\n        object-fit: contain;\n        border-radius: 8px;\n        background: var(--surface-1);\n        padding: 6px;\n    }\n\n    .resource-title {\n        font-size: 1.25rem;\n        margin: 1rem 0 0.5rem;\n        color: var(--text-high);\n        font-weight: 500;\n    }\n\n    .resource-description {\n        color: var(--text-medium);\n        font-size: 0.9rem;\n        margin-bottom: 1rem;\n        line-height: 1.4;\n    }\n\n    .resource-tags {\n        display: flex;\n        flex-wrap: wrap;\n        gap: 0.5rem;\n        margin-top: auto;\n    }\n\n    .tag {\n        background: var(--primary-container);\n        color: var(--primary);\n        padding: 0.25rem 0.75rem;\n        border-radius: 8px;\n        font-size: 0.75rem;\n        font-weight: 500;\n    }\n\n    /* ========== Admin Controls ========== */\n    .admin-controls {\n        position: fixed;\n        top: 1.5rem;\n        right: 1.5rem;\n        display: flex;\n        gap: 1rem;\n        z-index: 1000;\n    }\n\n    .logout-btn {\n        background: var(--primary);\n        color: var(--on-primary);\n        padding: 0.75rem 1.25rem;\n        border: none;\n        border-radius: 8px;\n        font-weight: 500;\n        cursor: pointer;\n    }\n\n    /* ========== Forms & Inputs ========== */\n    .login-container {\n        background: var(--surface-2);\n        border-radius: 16px;\n        padding: 2rem;\n        max-width: 400px;\n        margin: 4rem auto;\n        box-shadow: var(--elevation-2);\n    }\n\n    .form-input {\n        width: 100%;\n        padding: 1rem;\n        background: var(--surface-1);\n        border: 2px solid var(--surface-variant);\n        border-radius: 8px;\n        color: var(--text-high);\n        margin-bottom: 1.5rem;\n        font-size: 1rem;\n    }\n\n    .btn-submit {\n        background: var(--primary);\n        color: var(--on-primary);\n        padding: 1rem 2rem;\n        border: none;\n        border-radius: 8px;\n        font-weight: 500;\n        cursor: pointer;\n        width: 100%;\n    }\n\n    /* ========== Delete Button ========== */\n    .delete-btn {\n        position: absolute;\n        top: 1rem;\n        right: 1rem;\n        background: var(--error);\n        color: var(--error-container);\n        padding: 0.5rem;\n        border: none;\n        border-radius: 8px;\n        cursor: pointer;\n        opacity: 0;\n    }\n\n    .resource-card:hover .delete-btn {\n        opacity: 1;\n    }\n\n    /* ========== Typography ========== */\n    h2 {\n        font-size: 2.5rem;\n        font-weight: 700;\n        text-align: center;\n        margin-bottom: 1rem;\n        letter-spacing: -0.02em;\n    }\n\n    h4 {\n        color: var(--text-medium);\n        text-align: center;\n        margin-bottom: 2rem;\n        font-weight: 400;\n    }\n\n    /* ========== Responsive Design ========== */\n    @media (max-width: 768px) {\n        body {\n            padding: 1rem;\n        }\n        \n        #resources-div {\n            grid-template-columns: 1fr;\n        }\n        \n        .resource-card {\n            padding: 1.25rem;\n        }\n        \n        h2 {\n            font-size: 2rem;\n        }\n    }\n\n    /* ========== Utility Classes ========== */\n    .error-message {\n        color: var(--error);\n        background: var(--error-container);\n        padding: 1rem;\n        border-radius: 8px;\n        margin-bottom: 1.5rem;\n    }\n\n    .back-to-home {\n        display: inline-flex;\n        align-items: center;\n        gap: 0.5rem;\n        color: var(--text-medium);\n        margin-bottom: 1.5rem;\n    }\n\n    .back-to-home:hover {\n        color: var(--primary);\n    }\n</style></head>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

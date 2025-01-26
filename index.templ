@@ -1,24 +1,29 @@
 package main
 
 templ LoginPage(invalid bool) {
-        <div class="login-container">
-            <h2>Admin Login</h2>
-            if invalid {
-                <div class="error-message">Invalid password</div>
-            }
-            <form method="POST" action="/login">
-                <input 
-                    type="password" 
-                    name="password" 
-                    placeholder="Enter password"
-                    class="form-input"
-                    required
-                />
-                <button type="submit" class="btn-submit">Login</button>
-            </form>
-        </div>
+    <div class="login-container">
+        <a href="/" class="back-to-home">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H6M12 5l-7 7 7 7"/>
+            </svg>
+            Back to Resources
+        </a>
+        <h2>Admin Login</h2>
+        if invalid {
+            <div class="error-message">Invalid password</div>
+        }
+        <form method="POST" action="/login">
+            <input 
+                type="password" 
+                name="password" 
+                placeholder="Enter password"
+                class="form-input"
+                required
+            />
+            <button type="submit" class="btn-submit">Login</button>
+        </form>
+    </div>
 }
-
 
 templ ResourceCard(resource Resource, isAdmin bool) {
     <div id={ "resource-" + resource.Title } class="resource-card">
@@ -64,64 +69,249 @@ templ MainTemp(resources []Resource, isAdmin bool) {
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title>Esoteric Resources</title>
-        <style>
-            /* Add admin control styles */
-            .admin-controls {
-                position: fixed;
-                top: 1rem;
-                right: 1rem;
-                display: flex;
-                gap: 1rem;
-                z-index: 1000;
-            }
+<style>
+    /* ========== Material 3 Dark Theme ========== */
+    :root {
+        /* Surface Colors */
+        --surface-1: #1C1B1F;       /* Background */
+        --surface-2: #2D2B32;       /* Cards/Dialogs */
+        --surface-3: #3B3841;       /* Hover States */
+        --surface-4: #48454E;       /* Active States */
 
-            .login-container {
-                max-width: 400px;
-                margin: 2rem auto;
-                padding: 2rem;
-                background-color: #1e293b;
-                border-radius: 8px;
-            }
-            .error-message {
-                color: #ef4444;
-                margin-bottom: 1rem;
-            }
- 
-            .admin-only {
-                display: none;
-            }
+        /* Primary Colors */
+        --primary: #D0BCFF;         /* Primary Brand */
+        --on-primary: #381E72;      /* Text on Primary */
+        --primary-container: #4F378B;
+        
+        /* Text Colors */
+        --text-high: #E6E1E5;       /* High Emphasis */
+        --text-medium: #C9C5CA;     /* Medium Emphasis */
+        --text-disabled: #79747E;   /* Disabled */
 
-            .authenticated .admin-only {
-                display: block;
-            }
+        /* Status Colors */
+        --error: #F2B8B5;
+        --error-container: #8C1D18;
+        --success: #79DD72;
+        --warning: #FFD399;
 
-            .logout-btn {
-                background: none;
-                border: 1px solid #ef4444;
-                color: #ef4444;
-                padding: 0.5rem 1rem;
-                border-radius: 6px;
-                cursor: pointer;
-                transition: all 0.2s;
-            }
+        /* Borders & Elevation */
+        --outline: #938F99;
+        --surface-variant: #49454F;
+        --elevation-1: 0 1px 3px rgba(0,0,0,0.12);
+        --elevation-2: 0 4px 6px rgba(0,0,0,0.16);
+    }
 
-            .logout-btn:hover {
-                background-color: #ef4444;
-                color: white;
-            }
+    /* ========== Base Styles ========== */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        transition: background-color 0.2s, opacity 0.2s;
+    }
 
-            .login-link {
-                color: #3b82f6;
-                text-decoration: none;
-                position: fixed;
-                top: 1rem;
-                right: 1rem;
-            }
+    body {
+        font-family: 'Roboto', system-ui, sans-serif;
+        background: var(--surface-1);
+        color: var(--text-high);
+        line-height: 1.5;
+        padding: 2rem;
+        min-height: 100vh;
+    }
 
-            /* Existing styles remain unchanged */
-            /* ... [keep all existing style rules] ... */
-        </style>
-    </head>
+    a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+
+    /* ========== Resource Grid ========== */
+    #resources-div {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        padding: 2rem 0;
+    }
+
+    .resource-card {
+        background: var(--surface-2);
+        border-radius: 16px;
+        padding: 1.5rem;
+        position: relative;
+        box-shadow: var(--elevation-1);
+        border: 1px solid var(--surface-variant);
+    }
+
+    .resource-card:hover {
+        background: var(--surface-3);
+        box-shadow: var(--elevation-2);
+        transform: translateY(-2px);
+    }
+
+    .resource-icon {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        border-radius: 8px;
+        background: var(--surface-1);
+        padding: 6px;
+    }
+
+    .resource-title {
+        font-size: 1.25rem;
+        margin: 1rem 0 0.5rem;
+        color: var(--text-high);
+        font-weight: 500;
+    }
+
+    .resource-description {
+        color: var(--text-medium);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+
+    .resource-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: auto;
+    }
+
+    .tag {
+        background: var(--primary-container);
+        color: var(--primary);
+        padding: 0.25rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    /* ========== Admin Controls ========== */
+    .admin-controls {
+        position: fixed;
+        top: 1.5rem;
+        right: 1.5rem;
+        display: flex;
+        gap: 1rem;
+        z-index: 1000;
+    }
+
+    .logout-btn {
+        background: var(--primary);
+        color: var(--on-primary);
+        padding: 0.75rem 1.25rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    /* ========== Forms & Inputs ========== */
+    .login-container {
+        background: var(--surface-2);
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 400px;
+        margin: 4rem auto;
+        box-shadow: var(--elevation-2);
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 1rem;
+        background: var(--surface-1);
+        border: 2px solid var(--surface-variant);
+        border-radius: 8px;
+        color: var(--text-high);
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+    }
+
+    .btn-submit {
+        background: var(--primary);
+        color: var(--on-primary);
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    /* ========== Delete Button ========== */
+    .delete-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: var(--error);
+        color: var(--error-container);
+        padding: 0.5rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        opacity: 0;
+    }
+
+    .resource-card:hover .delete-btn {
+        opacity: 1;
+    }
+
+    /* ========== Typography ========== */
+    h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+    }
+
+    h4 {
+        color: var(--text-medium);
+        text-align: center;
+        margin-bottom: 2rem;
+        font-weight: 400;
+    }
+
+    /* ========== Responsive Design ========== */
+    @media (max-width: 768px) {
+        body {
+            padding: 1rem;
+        }
+        
+        #resources-div {
+            grid-template-columns: 1fr;
+        }
+        
+        .resource-card {
+            padding: 1.25rem;
+        }
+        
+        h2 {
+            font-size: 2rem;
+        }
+    }
+
+    /* ========== Utility Classes ========== */
+    .error-message {
+        color: var(--error);
+        background: var(--error-container);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+
+    .back-to-home {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-medium);
+        margin-bottom: 1.5rem;
+    }
+
+    .back-to-home:hover {
+        color: var(--primary);
+    }
+</style>
+</head>
     <body class={ templ.Classes("authenticated", isAdmin) }>
         <main>
             if isAdmin {
