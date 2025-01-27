@@ -1,8 +1,6 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: vashirr01/esoteric-resources-app    # Changed this line from 'build:'
     ports:
       - "8080:8080"
     environment:
@@ -19,7 +17,6 @@ services:
         condition: service_healthy
     networks:
       - app-network
-
   db:
     image: postgres:16-alpine
     environment:
@@ -35,10 +32,8 @@ services:
       retries: 5
     networks:
       - app-network
-
 volumes:
   postgres_data:
-
 networks:
   app-network:
     driver: bridge
