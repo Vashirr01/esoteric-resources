@@ -5,7 +5,8 @@ services:
     region: oregon  # or your preferred region
     plan: free
     healthCheckPath: /
-    dockerfilePath: vashirr01/esoteric-resources-app
+    dockerfilePath: ./Dockerfile  # If you're using the Dockerfile
+    # or use image: vashirr01/esoteric-resources-app  # If using Docker Hub image
     envVars:
       - key: ENVIRONMENT
         value: production
