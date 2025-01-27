@@ -112,7 +112,7 @@ func main() {
 		protected.POST("/", postResource)
 		protected.DELETE("/resource/:title", deleteResourceByTitle)
 	}
-	router.Run("localhost:8080")
+	router.Run(":8080")
 }
 
 func authMiddleware(c *gin.Context) {

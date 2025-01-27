@@ -6,23 +6,26 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - GO_ENV=production
+      - ENVIRONMENT=production
       - DB_HOST=db
       - DB_PORT=5432
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=resources  # Hardcode this to ensure it matches
-    restart: unless-stopped
+      - DB_NAME=resources
+      - SESSION_SECRET=${SESSION_SECRET}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
     depends_on:
       db:
         condition: service_healthy
-    
+    networks:
+      - app-network
+
   db:
-    image: postgres:latest
+    image: postgres:16-alpine
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=resources  # Hardcode this to ensure database creation
+      - POSTGRES_DB=resources
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -30,7 +33,12 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
