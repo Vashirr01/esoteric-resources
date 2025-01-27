@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: esoteric-resources-app
+    env: docker
+    region: oregon  # or your preferred region
+    plan: free
+    healthCheckPath: /
+    dockerfilePath: vashirr01/esoteric-resources-app
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DB_HOST
+        fromDatabase:
+          name: resources-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: resources-db
+          property: port
+      - key: DB_USER
+        fromDatabase:
+          name: resources-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: resources-db
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: resources-db
+          property: database
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        sync: false  # You'll set this in the dashboard
+
+databases:
+  - name: resources-db
+    region: oregon  # or your preferred region
+    plan: free
+    postgresMajorVersion: 16
