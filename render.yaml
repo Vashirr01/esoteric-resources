@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: esoteric-resources-app
+    name: esoteric-resources
     env: docker
     region: oregon  # or your preferred region
     plan: free
