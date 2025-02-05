@@ -145,12 +145,23 @@ templ LoginPage(invalid bool) {
     </html>
 }
 
+func SafeID(s string) string {
+    // Replace spaces and special characters with dashes
+    return strings.Map(func(r rune) rune {
+        if r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' || r >= '0' && r <= '9' {
+            return r
+        }
+        return '-'
+    }, s)
+}
+
 templ ResourceCard(resource Resource, isAdmin bool) {
-    <div id={ "resource-" + resource.Title } class="resource-card">
+    @SafeID(resource.Title)
+    <div id={ "resource-" + SafeID(resource.Title) } class="resource-card">
         if isAdmin {
             <button 
                 hx-delete={ "/resource/" + resource.Title }
-                hx-target={ "#resource-" + resource.Title }
+                hx-target={ "#resource-" + SafeID(resource.Title) }
                 hx-swap="outerHTML"
                 class="delete-btn admin-only">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
