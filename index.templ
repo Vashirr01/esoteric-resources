@@ -156,7 +156,6 @@ func SafeID(s string) string {
 }
 
 templ ResourceCard(resource Resource, isAdmin bool) {
-    @SafeID(resource.Title)
     <div id={ "resource-" + SafeID(resource.Title) } class="resource-card">
         if isAdmin {
             <button 
@@ -583,6 +582,8 @@ templ MainTemp(resources []Resource, isAdmin bool) {
             <div>
                 <h2>esoteric resources</h2>
                 <h4>:for cs/math/ml and more </h4>
+                <h4>(feel free to dm me any suggestions/recommendations you have on <a href="https://x.com/vashirr01" target="_blank" 
+           rel="noopener noreferrer">vashirr01</a>) </h4>
             </div>
             
             <div id="search-wrapper">
