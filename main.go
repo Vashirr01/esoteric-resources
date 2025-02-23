@@ -219,20 +219,28 @@ func deleteResourceByTitle(c *gin.Context) {
 	deleteSQL := `DELETE FROM resources WHERE title = $1;`
 	res, err := db.Exec(deleteSQL, title)
 	if err != nil {
+		c.Header("HX-Trigger", "showMessage")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
+		c.Header("HX-Trigger", "showMessage")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	if rowsAffected == 0 {
+		c.Header("HX-Trigger", "showMessage")
 		c.JSON(http.StatusNotFound, gin.H{"error": "resource not found"})
 		return
 	}
 
-	// Return 200 OK with no content - the element will be removed by HTMX
-	c.Status(http.StatusOK)
+	// For HTMX requests, return empty response with 200
+	if c.GetHeader("HX-Request") == "true" {
+		c.Status(http.StatusOK)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Resource deleted successfully"})
 }

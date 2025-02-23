@@ -160,7 +160,7 @@ templ ResourceCard(resource Resource, isAdmin bool) {
         if isAdmin {
             <button 
                 hx-delete={ "/resource/" + resource.Title }
-                hx-target={ "#resource-" + SafeID(resource.Title) }
+                hx-target={ "closest div.resource-card" }
                 hx-swap="outerHTML"
                 class="delete-btn admin-only">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -582,8 +582,7 @@ templ MainTemp(resources []Resource, isAdmin bool) {
             <div>
                 <h2>esoteric resources</h2>
                 <h4>:for cs/math/ml and more </h4>
-                <h4>(feel free to dm me any suggestions/recommendations you have on <a href="https://x.com/vashirr01" target="_blank" 
-           rel="noopener noreferrer">vashirr01</a>) </h4>
+                <h4>(feel free to dm me any suggestions/recommendations you have on <a href="https://x.com/vashirr01" target="_blank" rel="noopener noreferrer">vashirr01</a>) </h4>
             </div>
             
             <div id="search-wrapper">
