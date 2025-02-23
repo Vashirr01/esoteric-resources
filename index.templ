@@ -147,12 +147,29 @@ templ LoginPage(invalid bool) {
 
 func SafeID(s string) string {
     // Replace spaces and special characters with dashes
-    return strings.Map(func(r rune) rune {
-        if r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' || r >= '0' && r <= '9' {
+    // First remove any characters that aren't alphanumeric, spaces, or dashes
+    s = strings.Map(func(r rune) rune {
+        switch {
+        case r >= 'a' && r <= 'z':
             return r
+        case r >= 'A' && r <= 'Z':
+            return r
+        case r >= '0' && r <= '9':
+            return r
+        case r == ' ' || r == '-' || r == ':':
+            return '-'
+        default:
+            return '-'
         }
-        return '-'
     }, s)
+    
+    // Replace multiple dashes with single dash
+    s = strings.ReplaceAll(s, "--", "-")
+    
+    // Trim dashes from start and end
+    s = strings.Trim(s, "-")
+    
+    return s
 }
 
 templ ResourceCard(resource Resource, isAdmin bool) {
@@ -160,7 +177,7 @@ templ ResourceCard(resource Resource, isAdmin bool) {
         if isAdmin {
             <button 
                 hx-delete={ "/resource/" + resource.Title }
-                hx-target={ "##resource-" + SafeID(resource.Title) }
+                hx-target={ "#resource-" + SafeID(resource.Title) }
                 hx-swap="outerHTML"
                 hx-confirm="Are you sure you want to delete this resource?"
                 class="delete-btn admin-only">
@@ -170,7 +187,7 @@ templ ResourceCard(resource Resource, isAdmin bool) {
                     <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
                 </svg>
             </button>
-        }
+        }     
         <a href={ templ.SafeURL(resource.Link) } target="_blank" class="resource-link">
             <div class="resource-content">
                 <div class="resource-header">
