@@ -35,6 +35,15 @@ services:
     image: keycloak/keycloak:26.0
     command: start-dev --import-realm
     env_file: .env
+    environment:
+      - KC_HOSTNAME=http://auth.localhost
+      - KC_HOSTNAME_STRICT=false
+      - KC_HTTP_ENABLED=true
+      - KC_PROXY_HEADERS=xforwarded
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://db:5432/cloudlab?currentSchema=keycloak
+      - KC_DB_USERNAME=cloudlab
+      - KC_DB_PASSWORD=cloudlab_dev
     volumes:
       - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
     depends_on:
@@ -70,6 +79,7 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
       interval: 5s
