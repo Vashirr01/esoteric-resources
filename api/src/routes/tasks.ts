@@ -9,6 +9,7 @@ router.use(requireAuth);
 // Create a task
 router.post("/", async (req: AuthRequest, res) => {
   const { title, description, status } = req.body;
+  const userId = req.userId as string;
 
   if (!title) {
     res.status(400).json({ error: "title is required" });
@@ -17,7 +18,7 @@ router.post("/", async (req: AuthRequest, res) => {
 
   try {
     const task = await prisma.task.create({
-      data: { title, description, status, userId: req.userId! },
+      data: { title, description, status, userId },
     });
     res.status(201).json(task);
   } catch (err) {
@@ -27,9 +28,11 @@ router.post("/", async (req: AuthRequest, res) => {
 
 // List all tasks
 router.get("/", async (req: AuthRequest, res) => {
+  const userId = req.userId as string;
+
   try {
     const tasks = await prisma.task.findMany({
-      where: { userId: req.userId },
+      where: { userId },
       orderBy: { createdAt: "desc" },
     });
     res.json(tasks);
@@ -40,9 +43,12 @@ router.get("/", async (req: AuthRequest, res) => {
 
 // Get one task
 router.get("/:id", async (req: AuthRequest, res) => {
+  const userId = req.userId as string;
+  const id = req.params.id as string;
+
   try {
     const task = await prisma.task.findFirst({
-      where: { id: req.params.id, userId: req.userId },
+      where: { id, userId },
     });
 
     if (!task) {
@@ -58,11 +64,13 @@ router.get("/:id", async (req: AuthRequest, res) => {
 
 // Update a task
 router.put("/:id", async (req: AuthRequest, res) => {
+  const userId = req.userId as string;
+  const id = req.params.id as string;
   const { title, description, status } = req.body;
 
   try {
     const existing = await prisma.task.findFirst({
-      where: { id: req.params.id, userId: req.userId },
+      where: { id, userId },
     });
 
     if (!existing) {
@@ -71,7 +79,7 @@ router.put("/:id", async (req: AuthRequest, res) => {
     }
 
     const task = await prisma.task.update({
-      where: { id: req.params.id },
+      where: { id },
       data: { title, description, status },
     });
     res.json(task);
@@ -82,9 +90,12 @@ router.put("/:id", async (req: AuthRequest, res) => {
 
 // Delete a task
 router.delete("/:id", async (req: AuthRequest, res) => {
+  const userId = req.userId as string;
+  const id = req.params.id as string;
+
   try {
     const existing = await prisma.task.findFirst({
-      where: { id: req.params.id, userId: req.userId },
+      where: { id, userId },
     });
 
     if (!existing) {
@@ -93,7 +104,7 @@ router.delete("/:id", async (req: AuthRequest, res) => {
     }
 
     await prisma.task.delete({
-      where: { id: req.params.id },
+      where: { id },
     });
     res.status(204).send();
   } catch (err) {
