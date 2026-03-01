@@ -15,6 +15,8 @@ services:
       context: ./api
       target: dev
     env_file: .env
+    environment:
+      - KEYCLOAK_URL=http://keycloak:8080
     volumes:
       - ./api/src:/app/src
       - ./api/prisma:/app/prisma
@@ -26,6 +28,23 @@ services:
       - "traefik.http.routers.api.rule=Host(`api.localhost`)"
       - "traefik.http.routers.api.entrypoints=web"
       - "traefik.http.services.api.loadbalancer.server.port=3000"
+    networks:
+      - cloud-lab-net
+
+  keycloak:
+    image: keycloak/keycloak:26.0
+    command: start-dev --import-realm
+    env_file: .env
+    volumes:
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.keycloak.rule=Host(`auth.localhost`)"
+      - "traefik.http.routers.keycloak.entrypoints=web"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
     networks:
       - cloud-lab-net
 

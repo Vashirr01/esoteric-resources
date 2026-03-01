@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import keycloak from "./keycloak";
 
 const API = "http://api.localhost";
 
@@ -11,6 +12,13 @@ interface Task {
   updatedAt: string;
 }
 
+function authHeaders(): HeadersInit {
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${keycloak.token}`,
+  };
+}
+
 export default function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState("");
@@ -20,7 +28,9 @@ export default function App() {
   const [editDescription, setEditDescription] = useState("");
 
   const fetchTasks = async () => {
-    const res = await fetch(`${API}/tasks`);
+    const res = await fetch(`${API}/tasks`, {
+      headers: { Authorization: `Bearer ${keycloak.token}` },
+    });
     const data = await res.json();
     setTasks(data);
   };
@@ -35,7 +45,7 @@ export default function App() {
 
     await fetch(`${API}/tasks`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       body: JSON.stringify({ title, description: description || undefined }),
     });
 
@@ -48,14 +58,17 @@ export default function App() {
     const next = task.status === "done" ? "todo" : "done";
     await fetch(`${API}/tasks/${task.id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       body: JSON.stringify({ status: next }),
     });
     fetchTasks();
   };
 
   const deleteTask = async (id: string) => {
-    await fetch(`${API}/tasks/${id}`, { method: "DELETE" });
+    await fetch(`${API}/tasks/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${keycloak.token}` },
+    });
     fetchTasks();
   };
 
@@ -68,7 +81,7 @@ export default function App() {
   const saveEdit = async (id: string) => {
     await fetch(`${API}/tasks/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       body: JSON.stringify({ title: editTitle, description: editDescription || undefined }),
     });
     setEditingId(null);
@@ -81,7 +94,15 @@ export default function App() {
 
   return (
     <div className="container">
-      <h1>Task Manager</h1>
+      <header className="app-header">
+        <h1>Task Manager</h1>
+        <div className="user-info">
+          <span>{keycloak.tokenParsed?.preferred_username}</span>
+          <button onClick={() => keycloak.logout()} className="logout">
+            Logout
+          </button>
+        </div>
+      </header>
 
       <form onSubmit={createTask} className="create-form">
         <input

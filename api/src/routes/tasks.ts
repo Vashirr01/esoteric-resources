@@ -1,10 +1,13 @@
 import { Router } from "express";
 import prisma from "../lib/prisma";
+import { requireAuth, AuthRequest } from "../middleware/auth";
 
 const router = Router();
 
+router.use(requireAuth);
+
 // Create a task
-router.post("/", async (req, res) => {
+router.post("/", async (req: AuthRequest, res) => {
   const { title, description, status } = req.body;
 
   if (!title) {
@@ -14,7 +17,7 @@ router.post("/", async (req, res) => {
 
   try {
     const task = await prisma.task.create({
-      data: { title, description, status },
+      data: { title, description, status, userId: req.userId! },
     });
     res.status(201).json(task);
   } catch (err) {
@@ -23,9 +26,10 @@ router.post("/", async (req, res) => {
 });
 
 // List all tasks
-router.get("/", async (_req, res) => {
+router.get("/", async (req: AuthRequest, res) => {
   try {
     const tasks = await prisma.task.findMany({
+      where: { userId: req.userId },
       orderBy: { createdAt: "desc" },
     });
     res.json(tasks);
@@ -35,10 +39,10 @@ router.get("/", async (_req, res) => {
 });
 
 // Get one task
-router.get("/:id", async (req, res) => {
+router.get("/:id", async (req: AuthRequest, res) => {
   try {
-    const task = await prisma.task.findUnique({
-      where: { id: req.params.id },
+    const task = await prisma.task.findFirst({
+      where: { id: req.params.id, userId: req.userId },
     });
 
     if (!task) {
@@ -53,36 +57,46 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update a task
-router.put("/:id", async (req, res) => {
+router.put("/:id", async (req: AuthRequest, res) => {
   const { title, description, status } = req.body;
 
   try {
+    const existing = await prisma.task.findFirst({
+      where: { id: req.params.id, userId: req.userId },
+    });
+
+    if (!existing) {
+      res.status(404).json({ error: "Task not found" });
+      return;
+    }
+
     const task = await prisma.task.update({
       where: { id: req.params.id },
       data: { title, description, status },
     });
     res.json(task);
-  } catch (err: any) {
-    if (err.code === "P2025") {
-      res.status(404).json({ error: "Task not found" });
-      return;
-    }
+  } catch (err) {
     res.status(500).json({ error: "Failed to update task" });
   }
 });
 
 // Delete a task
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", async (req: AuthRequest, res) => {
   try {
+    const existing = await prisma.task.findFirst({
+      where: { id: req.params.id, userId: req.userId },
+    });
+
+    if (!existing) {
+      res.status(404).json({ error: "Task not found" });
+      return;
+    }
+
     await prisma.task.delete({
       where: { id: req.params.id },
     });
     res.status(204).send();
-  } catch (err: any) {
-    if (err.code === "P2025") {
-      res.status(404).json({ error: "Task not found" });
-      return;
-    }
+  } catch (err) {
     res.status(500).json({ error: "Failed to delete task" });
   }
 });
