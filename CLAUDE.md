@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Journey
+
+Full project history, decisions, problems, and fixes documented in [`docs/journey.md`](docs/journey.md).
+
 ## Project
 
 **esoteric-resources** — Pinterest-like aggregator for CS learning materials, research papers, and mathematical models. Users create boards, add resources (links with tags), and share them publicly.
