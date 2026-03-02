@@ -2,12 +2,9 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import jwksClient from "jwks-rsa";
 
-const keycloakUrl = process.env.KEYCLOAK_URL || "http://auth.localhost";
-const realm = process.env.KEYCLOAK_REALM || "cloud-lab";
+const jwksUri = process.env.JWKS_URI || "https://rcjclulpdehdlukahnwb.supabase.co/auth/v1/.well-known/jwks.json";
 
-const client = jwksClient({
-  jwksUri: `${keycloakUrl}/realms/${realm}/protocol/openid-connect/certs`,
-});
+const client = jwksClient({ jwksUri });
 
 function getKey(header: jwt.JwtHeader, callback: jwt.SigningKeyCallback) {
   client.getSigningKey(header.kid, (err, key) => {
