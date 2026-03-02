@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import keycloak from "../keycloak";
+import { useAuth } from "../lib/AuthContext";
 
-const API = "http://api.localhost";
+const API = import.meta.env.VITE_API_URL || "http://api.localhost";
 
 interface Board {
   id: string;
@@ -13,23 +13,15 @@ interface Board {
   _count: { resources: number };
 }
 
-function authHeaders(): HeadersInit {
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${keycloak.token}`,
-  };
-}
-
 export default function MyBoards() {
+  const { session, user } = useAuth();
   const [boards, setBoards] = useState<Board[]>([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
-  const userId = keycloak.tokenParsed?.sub;
-
   const fetchBoards = () => {
-    if (!userId) return;
-    fetch(`${API}/boards/by-user/${userId}`)
+    if (!user) return;
+    fetch(`${API}/boards/by-user/${user.id}`)
       .then((r) => r.json())
       .then(setBoards)
       .catch(() => setBoards([]));
@@ -37,7 +29,7 @@ export default function MyBoards() {
 
   useEffect(() => {
     fetchBoards();
-  }, [userId]);
+  }, [user]);
 
   const createBoard = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +37,10 @@ export default function MyBoards() {
 
     await fetch(`${API}/boards`, {
       method: "POST",
-      headers: authHeaders(),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token}`,
+      },
       body: JSON.stringify({ name, description: description || undefined }),
     });
 
@@ -57,13 +52,13 @@ export default function MyBoards() {
   const deleteBoard = async (id: string) => {
     await fetch(`${API}/boards/${id}`, {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${keycloak.token}` },
+      headers: { Authorization: `Bearer ${session?.access_token}` },
     });
     fetchBoards();
   };
 
-  if (!keycloak.authenticated) {
-    return <p className="empty">Please <button onClick={() => keycloak.login()} className="btn-link">login</button> to manage your boards.</p>;
+  if (!session) {
+    return <p className="empty">Please <Link to="/login" className="btn-link">login</Link> to manage your boards.</p>;
   }
 
   return (
