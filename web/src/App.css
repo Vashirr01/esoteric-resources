@@ -284,3 +284,14 @@ body {
 h2 {
   margin-bottom: 1rem;
 }
+
+.error {
+  color: #c00;
+  font-size: 0.875rem;
+}
+
+.toggle-auth {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #666;
+}
