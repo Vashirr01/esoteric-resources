@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ResourceCard from "../components/ResourceCard";
 
-const API = "http://api.localhost";
+const API = import.meta.env.VITE_API_URL || "http://api.localhost";
 
 interface Resource {
   id: string;
