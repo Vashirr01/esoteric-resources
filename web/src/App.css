@@ -6,45 +6,227 @@
 
 body {
   font-family: system-ui, -apple-system, sans-serif;
-  background: #f5f5f5;
+  background: #f0f0f0;
   color: #333;
 }
 
 .container {
-  max-width: 600px;
-  margin: 2rem auto;
+  max-width: 960px;
+  margin: 0 auto;
   padding: 0 1rem;
 }
 
-.app-header {
+/* Header */
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 1rem 0;
   margin-bottom: 1.5rem;
+  border-bottom: 1px solid #ddd;
 }
 
-.user-info {
+.logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #333;
+  text-decoration: none;
+}
+
+.header nav {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
   font-size: 0.875rem;
-  color: #666;
 }
 
-.logout {
-  padding: 0.25rem 0.5rem;
+.header nav a {
+  color: #555;
+  text-decoration: none;
+}
+
+.header nav a:hover {
+  color: #000;
+}
+
+.username {
+  color: #888;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  font-size: inherit;
+  text-decoration: underline;
+}
+
+/* Masonry Grid */
+.masonry {
+  column-count: 3;
+  column-gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .masonry { column-count: 2; }
+}
+
+@media (max-width: 480px) {
+  .masonry { column-count: 1; }
+}
+
+/* Resource Card */
+.resource-card {
+  display: block;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  break-inside: avoid;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.15s;
+}
+
+.resource-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.resource-card h3 {
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.domain {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+}
+
+.tag {
+  font-size: 0.7rem;
+  padding: 0.125rem 0.5rem;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  cursor: pointer;
+  color: #555;
+}
+
+.tag:hover {
+  background: #e0e0e0;
+}
+
+/* Active Filter */
+.active-filter {
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+.clear-filter {
+  margin-left: 0.5rem;
+  background: none;
+  border: none;
+  color: #c00;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: inherit;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem 0;
+  font-size: 0.875rem;
+}
+
+.pagination button {
+  padding: 0.375rem 0.75rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   background: #fff;
   cursor: pointer;
-  font-size: 0.8rem;
 }
 
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Board Header */
+.board-header {
+  margin-bottom: 1.5rem;
+}
+
+.board-header h2 {
+  margin-bottom: 0.25rem;
+}
+
+.board-header p {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.resource-count {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+/* Board List */
+.board-list {
+  list-style: none;
+}
+
+.board-item {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.board-item a {
+  color: #333;
+  text-decoration: none;
+}
+
+.board-item a:hover {
+  text-decoration: underline;
+}
+
+.board-item p {
+  font-size: 0.875rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+/* Forms */
 .create-form {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
+  max-width: 500px;
 }
 
 .create-form input {
@@ -64,81 +246,41 @@ body {
   font-size: 1rem;
 }
 
-.task-list {
-  list-style: none;
-}
-
-.task-list li {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-
-.task-list li.done .task-content strong {
-  text-decoration: line-through;
-  opacity: 0.5;
-}
-
-.task-content {
-  flex: 1;
-  cursor: pointer;
-}
-
-.task-content p {
-  font-size: 0.875rem;
-  color: #666;
-  margin-top: 0.25rem;
-}
-
-.status {
-  font-size: 0.75rem;
-  background: #eee;
-  padding: 0.125rem 0.375rem;
-  border-radius: 2px;
-  margin-top: 0.25rem;
-  display: inline-block;
-}
-
+/* Actions */
 .actions {
   display: flex;
-  gap: 0.25rem;
+  gap: 0.5rem;
+  align-items: center;
 }
 
-.actions button {
+.btn {
   padding: 0.25rem 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   background: #fff;
   cursor: pointer;
   font-size: 0.8rem;
+  text-decoration: none;
+  color: #333;
 }
 
-.actions button.delete {
-  color: #c00;
-  border-color: #c00;
-}
-
-.edit-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  width: 100%;
-}
-
-.edit-form input {
-  padding: 0.375rem;
-  border: 1px solid #ccc;
+.delete {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #c00;
   border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #c00;
 }
 
+/* Utilities */
 .empty {
   color: #999;
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 3rem;
+}
+
+h2 {
+  margin-bottom: 1rem;
 }
