@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import keycloak from "../keycloak";
+import { useAuth } from "../lib/AuthContext";
 
-const API = "http://api.localhost";
+const API = import.meta.env.VITE_API_URL || "http://api.localhost";
 
 export default function AddResource() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { session } = useAuth();
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [tagsInput, setTagsInput] = useState("");
@@ -24,7 +25,7 @@ export default function AddResource() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${keycloak.token}`,
+        Authorization: `Bearer ${session?.access_token}`,
       },
       body: JSON.stringify({ url, title, tags }),
     });
@@ -32,7 +33,7 @@ export default function AddResource() {
     navigate(`/board/${id}`);
   };
 
-  if (!keycloak.authenticated) {
+  if (!session) {
     return <p className="empty">Please login to add resources.</p>;
   }
 
