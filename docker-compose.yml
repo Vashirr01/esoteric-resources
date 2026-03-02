@@ -16,7 +16,7 @@ services:
       target: dev
     env_file: .env
     environment:
-      - KEYCLOAK_URL=http://keycloak:8080
+      - JWKS_URI=${JWKS_URI}
     volumes:
       - ./api/src:/app/src
       - ./api/prisma:/app/prisma
