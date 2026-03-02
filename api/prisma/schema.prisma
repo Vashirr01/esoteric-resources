@@ -7,14 +7,39 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Task {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  status      String   @default("todo")
-  userId      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Resource {
+  id        String   @id @default(uuid())
+  url       String
+  title     String
+  tags      String[]
+  userId    String
+  createdAt DateTime @default(now())
+
+  boards BoardResource[]
 
   @@index([userId])
+}
+
+model Board {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  isPublic    Boolean  @default(true)
+  userId      String
+  createdAt   DateTime @default(now())
+
+  resources BoardResource[]
+
+  @@index([userId])
+}
+
+model BoardResource {
+  boardId    String
+  resourceId String
+  addedAt    DateTime @default(now())
+
+  board    Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@id([boardId, resourceId])
 }
