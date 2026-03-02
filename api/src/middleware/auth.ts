@@ -40,3 +40,21 @@ export function requireAuth(req: AuthRequest, res: Response, next: NextFunction)
     next();
   });
 }
+
+export function optionalAuth(req: AuthRequest, res: Response, next: NextFunction) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    next();
+    return;
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  jwt.verify(token, getKey, { algorithms: ["RS256"] }, (err, decoded) => {
+    if (!err && decoded) {
+      req.userId = (decoded as jwt.JwtPayload).sub;
+    }
+    next();
+  });
+}
