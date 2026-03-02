@@ -1,0 +1,4 @@
+project_name     = "cloudlab"
+location         = "eastus"
+db_admin_username = "cloudlab"
+db_admin_password = "CHANGE_ME_TO_A_STRONG_PASSWORD"
