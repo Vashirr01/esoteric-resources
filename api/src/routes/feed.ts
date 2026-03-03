@@ -33,6 +33,7 @@ router.get("/", async (req, res) => {
 
     res.json({ resources, total, page, limit });
   } catch (err) {
+    console.error("Feed error:", err);
     res.status(500).json({ error: "Failed to fetch feed" });
   }
 });
