@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: esoteric-resources-api
+    runtime: node
+    region: ohio
+    plan: free
+    rootDir: api
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npx prisma migrate deploy && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWKS_URI
+        value: https://rcjclulpdehdlukahnwb.supabase.co/auth/v1/.well-known/jwks.json
+      - key: DATABASE_URL
+        sync: false # set manually in dashboard
+
+  - type: web
+    name: esoteric-resources-web
+    runtime: static
+    region: ohio
+    plan: free
+    rootDir: web
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false # set after API deploys (need the URL)
+      - key: VITE_SUPABASE_URL
+        value: https://rcjclulpdehdlukahnwb.supabase.co
+      - key: VITE_SUPABASE_ANON_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjamNsdWxwZGVoZGx1a2FobndiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0OTM3MzEsImV4cCI6MjA4ODA2OTczMX0.GrwMupkUkP_ykfSEXzEf5r314WR0XQ6W-lQHL6tgrx0
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
