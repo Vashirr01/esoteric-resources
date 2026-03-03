@@ -154,13 +154,13 @@ User wanted to build a real app instead of a learning task manager. Chose a Pint
 
 ---
 
-## Deployment Plan (Current)
+## Phase 3: Deployment to Render + Supabase
 
-### Architecture
+### Architecture (Live)
 ```
-Render Static Site  → frontend (Vite build)
-Render Web Service  → API (Express + Prisma)
-Supabase            → PostgreSQL database + Auth (replacing Keycloak)
+Render Static Site  → frontend (Vite build)    → https://esoteric-resources-web.onrender.com
+Render Web Service  → API (Express + Prisma)   → https://esoteric-resources-api.onrender.com
+Supabase            → PostgreSQL + Auth         → rcjclulpdehdlukahnwb (us-east-1)
 ```
 
 ### Why Render + Supabase (not Azure yet)
@@ -170,18 +170,55 @@ Supabase            → PostgreSQL database + Auth (replacing Keycloak)
 - Supabase Auth replaces Keycloak (managed, lighter, same OAuth2 concepts)
 - Azure is planned for later — Terraform already written
 
-### What needs to change for production
-- API URL: `http://api.localhost` → Render Web Service URL
-- Database: local Docker Postgres → Supabase Postgres
-- Auth: Keycloak → Supabase Auth (swap JWT validation + frontend SDK)
-- CORS: allow Render frontend domain
-- Frontend: build-time env var for API URL
-- HTTPS: automatic on Render
+### Auth swap: Keycloak → Supabase
+- API: `auth.ts` middleware now uses configurable `JWKS_URI` env var (works with any OIDC provider)
+- Frontend: Removed `keycloak-js`, added `@supabase/supabase-js`
+- New: `AuthContext.tsx` (React context), `Login.tsx` (email/password form), `supabase.ts` (client init)
+- All API URLs configurable via `VITE_API_URL` env var
 
-### What stays the same
-- All application code (Express routes, Prisma schema, React components)
-- Docker Compose for local dev
-- Terraform for future Azure deployment
+### Supabase setup
+- Project: `rcjclulpdehdlukahnwb` in `us-east-1`, free tier ($0/month)
+- Tables created via Supabase MCP migration (Resource, Board, BoardResource)
+- Row Level Security (RLS) enabled: public read for public boards/resources, owner-only writes
+
+### Render setup
+- API Web Service: `srv-d6j2ddcr85hc73fpef50` (Node, free, ohio)
+- Frontend Static Site: `srv-d6j2di5m5p6s73derqlg` (static, free, ohio)
+- Auto-deploy on git push to master
+- `render.yaml` blueprint in repo root
+
+### Problems Encountered
+
+#### 10. Render build fails — missing @types/express
+**Problem**: `NODE_ENV=production` causes `npm install` to skip devDependencies. TypeScript build fails without type definitions.
+**Fix**: Changed build command to `npm install --include=dev`.
+
+#### 11. Prisma can't reach Supabase direct connection
+**Problem**: `P1001: Can't reach database server at db.ref.supabase.co:5432`. Supabase uses IPv6 for direct connections; Render free tier may not support IPv6.
+**Fix**: Use Supabase connection pooler (Supavisor session mode) instead of direct connection.
+
+#### 12. Supavisor "Tenant or user not found"
+**Problem**: Using wrong pooler host. Had `aws-0-us-east-1.pooler.supabase.com` but correct host was `aws-1-us-east-1.pooler.supabase.com`.
+**Fix**: Copied exact connection string from Supabase dashboard Connect button.
+
+#### 13. Prisma migrate deploy fails on pooler
+**Problem**: `prisma migrate deploy` in start command failed with connection errors through Supavisor.
+**Fix**: Removed `prisma migrate deploy` from start command — tables already created via Supabase MCP. Start command is now just `npm start`.
+
+#### 14. PrismaClientInitializationError (empty message)
+**Problem**: API health endpoint worked but all Prisma queries failed silently. Error logging revealed `PrismaClientInitializationError` with no message.
+**Root cause**: Database password was wrong — used password from a different Supabase project.
+**Fix**: Reset database password in Supabase dashboard and updated `DATABASE_URL` on Render.
+
+### Deployment env vars
+| Service | Key | Source |
+|---------|-----|--------|
+| API | `DATABASE_URL` | Supabase pooler session mode string (set manually) |
+| API | `JWKS_URI` | Supabase JWKS endpoint |
+| API | `NODE_ENV` | `production` |
+| Frontend | `VITE_API_URL` | Render API URL |
+| Frontend | `VITE_SUPABASE_URL` | Supabase project URL |
+| Frontend | `VITE_SUPABASE_ANON_KEY` | Supabase anon key |
 
 ---
 
@@ -195,6 +232,9 @@ Supabase            → PostgreSQL database + Auth (replacing Keycloak)
 6. **Dev vs Prod differences**: Traefik/Docker locally vs managed services in cloud, env vars for configuration, build steps vs dev servers
 7. **CI/CD**: GitHub Actions for type-checking (removed), Render auto-deploy from git push
 8. **Database schema separation**: Isolating third-party tools (Keycloak) from app schema to prevent migration drift
+9. **Platform deployment (Render)**: Blueprint files, auto-deploy from git, env var management, build vs start commands, free tier limitations
+10. **Managed database (Supabase)**: Connection pooling (Supavisor session vs transaction mode), IPv6 vs IPv4, RLS policies, MCP-driven migrations
+11. **Auth provider swap**: Abstracting auth via JWKS_URI makes provider swaps painless — API doesn't care if it's Keycloak or Supabase
 
 ---
 
