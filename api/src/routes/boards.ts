@@ -35,13 +35,14 @@ router.get("/:id", optionalAuth, async (req: AuthRequest, res) => {
   }
 });
 
-// GET /boards/by-user/:userId — public boards for a user
-router.get("/by-user/:userId", async (req, res) => {
+// GET /boards/by-user/:userId — public boards for a user (or all boards if owner)
+router.get("/by-user/:userId", optionalAuth, async (req: AuthRequest, res) => {
   const userId = req.params.userId as string;
+  const isOwner = req.userId === userId;
 
   try {
     const boards = await prisma.board.findMany({
-      where: { userId, isPublic: true },
+      where: { userId, ...(isOwner ? {} : { isPublic: true }) },
       orderBy: { createdAt: "desc" },
       include: {
         _count: { select: { resources: true } },

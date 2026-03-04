@@ -267,5 +267,60 @@ GitHub OAuth requires creating a GitHub OAuth App and enabling the GitHub provid
 
 ---
 
+## Phase 7: User Profile Pages
+
+### Goal
+Give users public profile pages to showcase their boards and bio, with owner-controlled visibility.
+
+### What was done
+
+1. **Supabase migration** — Added `bio TEXT` and `is_public BOOLEAN DEFAULT true` columns to the existing `profiles` table.
+
+2. **UserProfile page** (`web/src/pages/UserProfile.tsx`) — New page at `/user/:username`.
+   - Fetches profile from Supabase by username, boards from existing API (`/boards/by-user/:userId`)
+   - Three states: loading, private (non-owner sees "This profile is private"), visible profile with boards list
+   - Owner sees "Edit profile" button → inline edit mode with textarea for bio, checkbox for visibility, save/cancel
+
+3. **Route** — Added `<Route path="/user/:username">` in App.tsx (public, no ProtectedRoute)
+
+4. **Header link** — Username `<span>` changed to `<Link>` navigating to own profile
+
+5. **CSS** — Profile header card, bio display, edit form, private message, username hover styles
+
+### Decisions
+- No new API endpoints — profile CRUD via Supabase client (RLS handles auth), boards via existing API
+- Inline editing rather than separate edit page
+- Profile public by default (matches existing board default)
+
+---
+
+## Phase 8: Board Public/Private Visibility
+
+### Goal
+Let users control whether individual boards are public or private.
+
+### What was done
+
+1. **API fix** (`api/src/routes/boards.ts`) — `GET /boards/by-user/:userId` now uses `optionalAuth`. If the requester is the board owner, returns all boards (including private). Non-owners still only see public boards.
+
+2. **MyBoards UI** (`web/src/pages/MyBoards.tsx`):
+   - Create form has "Public" checkbox (checked by default, unchecked = private board)
+   - Each board shows a "Make Private" / "Make Public" toggle button
+   - Private boards show a "Private" badge next to resource count
+   - `loadBoards` now uses `fetchWithAuth` so the API can identify the owner
+
+3. **CSS** — Visibility toggle label and private badge styles
+
+### Already working (no changes needed)
+- `POST /boards` already accepts `isPublic` in body
+- `PUT /boards/:id` already accepts `isPublic` for updates
+- `GET /boards/:id` already hides private boards from non-owners
+- Board model already has `isPublic` column (default true)
+
+### Deploy note
+The API change (`by-user` with `optionalAuth`) must be deployed for owners to see their own private boards in the list. Until then, private boards are created correctly but vanish from the owner's My Boards view.
+
+---
+
 ## Repo: Vashirr01/azure (private)
 ## Branch: master

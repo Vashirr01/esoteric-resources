@@ -19,10 +19,11 @@ export default function MyBoards() {
   const [boards, setBoards] = useState<Board[]>([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [isPublic, setIsPublic] = useState(true);
 
   const loadBoards = () => {
     if (!user) return;
-    fetch(`${API}/boards/by-user/${user.id}`)
+    fetchWithAuth(`${API}/boards/by-user/${user.id}`)
       .then((r) => r.json())
       .then(setBoards)
       .catch(() => setBoards([]));
@@ -39,11 +40,21 @@ export default function MyBoards() {
     await fetchWithAuth(`${API}/boards`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, description: description || undefined }),
+      body: JSON.stringify({ name, description: description || undefined, isPublic }),
     });
 
     setName("");
     setDescription("");
+    setIsPublic(true);
+    loadBoards();
+  };
+
+  const toggleVisibility = async (board: Board) => {
+    await fetchWithAuth(`${API}/boards/${board.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isPublic: !board.isPublic }),
+    });
     loadBoards();
   };
 
@@ -69,6 +80,14 @@ export default function MyBoards() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
+        <label className="visibility-toggle">
+          <input
+            type="checkbox"
+            checked={isPublic}
+            onChange={(e) => setIsPublic(e.target.checked)}
+          />
+          Public
+        </label>
         <button type="submit">Create Board</button>
       </form>
 
@@ -81,9 +100,15 @@ export default function MyBoards() {
               <div>
                 <Link to={`/board/${board.id}`}><strong>{board.name}</strong></Link>
                 {board.description && <p>{board.description}</p>}
-                <span className="resource-count">{board._count.resources} resources</span>
+                <span className="resource-count">
+                  {board._count.resources} resources
+                  {!board.isPublic && <span className="board-private-badge">Private</span>}
+                </span>
               </div>
               <div className="actions">
+                <button onClick={() => toggleVisibility(board)} className="btn">
+                  {board.isPublic ? "Make Private" : "Make Public"}
+                </button>
                 <Link to={`/my/boards/${board.id}/add`} className="btn">Add Resource</Link>
                 <button onClick={() => deleteBoard(board.id)} className="delete">Delete</button>
               </div>

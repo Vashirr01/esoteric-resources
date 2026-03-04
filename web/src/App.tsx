@@ -7,6 +7,7 @@ import MyBoards from "./pages/MyBoards";
 import AddResource from "./pages/AddResource";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
+import UserProfile from "./pages/UserProfile";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Feed />} />
           <Route path="/board/:id" element={<BoardView />} />
+          <Route path="/user/:username" element={<UserProfile />} />
           <Route path="/my/boards" element={<ProtectedRoute><MyBoards /></ProtectedRoute>} />
           <Route path="/my/boards/:id/add" element={<ProtectedRoute><AddResource /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
