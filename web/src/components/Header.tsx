@@ -11,7 +11,7 @@ export default function Header() {
         {session ? (
           <>
             <Link to="/my/boards">My Boards</Link>
-            <span className="username">{user?.email}</span>
+            <span className="username">{user?.user_metadata?.username || user?.email}</span>
             <button onClick={() => signOut()} className="btn-link">Logout</button>
           </>
         ) : (

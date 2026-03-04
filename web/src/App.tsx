@@ -5,6 +5,7 @@ import BoardView from "./pages/BoardView";
 import MyBoards from "./pages/MyBoards";
 import AddResource from "./pages/AddResource";
 import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="/my/boards" element={<MyBoards />} />
           <Route path="/my/boards/:id/add" element={<AddResource />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </main>
     </div>

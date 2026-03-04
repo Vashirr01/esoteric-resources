@@ -19,17 +19,17 @@ Local dev (Docker Compose + Traefik):
   auth.localhost   → keycloak (port 8080)
                      db (PostgreSQL 16)
 
-Production (planned):
-  Render Static Site  → frontend (Vite build)
-  Render Web Service  → API (Express + Prisma)
-  Supabase            → PostgreSQL + Auth
+Production (Render + Supabase):
+  esoteric-resources-web.onrender.com  → frontend (Vite build, static site)
+  esoteric-resources-api.onrender.com  → API (Express + Prisma, web service)
+  Supabase (rcjclulpdehdlukahnwb)      → PostgreSQL + Auth (us-east-1)
 ```
 
 - **API** (`api/`): Express + TypeScript + Prisma ORM. Routes: `/health`, `/feed` (public), `/boards` (CRUD + resource management).
-- **Frontend** (`web/`): React 19 + Vite + TypeScript + react-router-dom. Pages: Feed (`/`), Board View (`/board/:id`), My Boards (`/my/boards`), Add Resource (`/my/boards/:id/add`).
-- **Auth**: Keycloak locally (JWT + JWKS, `check-sso` mode so feed is public). Migrating to Supabase Auth for production.
-- **Database**: PostgreSQL with Prisma. Keycloak uses separate `keycloak` schema (created by `db/init.sql`).
-- **Infra**: Traefik reverse proxy routes by hostname in dev. Terraform in `terraform/` for future Azure deployment.
+- **Frontend** (`web/`): React 19 + Vite + TypeScript + react-router-dom. Pages: Feed (`/`), Board View (`/board/:id`), My Boards (`/my/boards`), Add Resource (`/my/boards/:id/add`), Login (`/login`).
+- **Auth**: Supabase Auth in production (ES256 JWTs via JWKS). Keycloak locally. API is provider-agnostic — uses configurable `JWKS_URI` env var for JWT verification.
+- **Database**: PostgreSQL with Prisma. Keycloak uses separate `keycloak` schema locally (created by `db/init.sql`).
+- **Infra**: Traefik reverse proxy routes by hostname in dev. `render.yaml` blueprint for Render deployment. Terraform in `terraform/` for future Azure deployment.
 
 ## Commands
 
@@ -62,6 +62,8 @@ cd api && npm install <package>
 cd web && npm install <package>
 ```
 
+No test framework or lint configuration is set up yet.
+
 ## Data Model
 
 Three Prisma models in `api/prisma/schema.prisma`:
@@ -69,19 +71,26 @@ Three Prisma models in `api/prisma/schema.prisma`:
 - **Board**: name, description, isPublic (default true), userId
 - **BoardResource**: join table (boardId + resourceId composite key, cascade deletes)
 
+Orphaned resources are auto-deleted when removed from their last board.
+
 ## Auth Pattern
 
 Two middleware functions in `api/src/middleware/auth.ts`:
 - `requireAuth` — rejects if no valid JWT (used for board mutations)
 - `optionalAuth` — extracts userId if token present, passes through if not (used for public read endpoints)
 
-The API uses `KEYCLOAK_URL` env var for JWKS endpoint. Locally this is `http://keycloak:8080` (Docker internal network), while the frontend uses `http://auth.localhost` (via Traefik).
+JWT verification uses `jwks-rsa` with configurable `JWKS_URI` env var. Supports both RS256 (Keycloak) and ES256 (Supabase) algorithms. User ID comes from the JWT `sub` claim.
+
+Frontend auth uses `@supabase/supabase-js` via `AuthContext.tsx` (React context providing session, signIn, signUp, signOut). Note: `keycloak-js` is still in web dependencies but unused in production.
 
 ## Environment
 
 Copy `.env.example` to `.env` for local dev. Key variables:
 - `DATABASE_URL` — Prisma connection string
-- `KEYCLOAK_URL` / `KEYCLOAK_REALM` — Auth server config
+- `JWKS_URI` — JWKS endpoint for JWT verification (Supabase or Keycloak)
+- `KEYCLOAK_URL` / `KEYCLOAK_REALM` — Local Keycloak config
+- `VITE_API_URL` — API base URL for frontend
+- `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` — Supabase client config
 - `PORT` — API port (default 3000)
 
 ## Local URLs
@@ -95,8 +104,11 @@ Copy `.env.example` to `.env` for local dev. Key variables:
 
 Test user: `demo` / `demo`
 
-## Deployment Targets
+## Deployment
 
-- **Render**: API as Web Service, frontend as Static Site (not yet configured)
-- **Supabase**: PostgreSQL database + Auth (replacing Keycloak for production)
-- **Azure**: Terraform IaC in `terraform/` (App Service, PostgreSQL Flexible Server, ACR, Key Vault) — future phase
+Render auto-deploys on push to `master`. Blueprint: `render.yaml`.
+
+- **API build**: `npm install --include=dev && npx prisma generate && npm run build` → `npm start`
+- **Frontend build**: `npm install && npm run build` → static serve from `dist/` with SPA rewrite
+- **Database**: Supabase connection pooler (Supavisor session mode) — direct connections don't work from Render free tier (IPv6 issue)
+- **Migrations**: Applied via Supabase MCP, not `prisma migrate deploy` (pooler doesn't support it)
