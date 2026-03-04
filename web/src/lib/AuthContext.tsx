@@ -8,6 +8,7 @@ interface AuthContextType {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<string | null>;
   signUp: (email: string, password: string, username?: string) => Promise<string | null>;
+  signInWithGitHub: () => void;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<string | null>;
   updatePassword: (password: string) => Promise<string | null>;
@@ -41,12 +42,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUp = async (email: string, password: string, username?: string): Promise<string | null> => {
-    const { error } = await supabase.auth.signUp({
+    if (username) {
+      // Check if username is already taken
+      const { data: existing } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("username", username)
+        .maybeSingle();
+
+      if (existing) return "Username is already taken.";
+    }
+
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: username ? { data: { username } } : undefined,
     });
-    return error ? error.message : null;
+    if (error) return error.message;
+
+    // Insert profile row with username
+    if (data.user && username) {
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert({ id: data.user.id, username });
+
+      if (profileError) {
+        // If profile insert fails due to unique constraint (race condition), clean up
+        if (profileError.code === "23505") {
+          return "Username is already taken.";
+        }
+        return profileError.message;
+      }
+    }
+
+    return null;
+  };
+
+  const signInWithGitHub = () => {
+    supabase.auth.signInWithOAuth({ provider: "github" });
   };
 
   const signOut = async () => {
@@ -66,7 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, loading, signIn, signUp, signOut, resetPassword, updatePassword }}>
+    <AuthContext.Provider value={{ session, user, loading, signIn, signUp, signInWithGitHub, signOut, resetPassword, updatePassword }}>
       {children}
     </AuthContext.Provider>
   );

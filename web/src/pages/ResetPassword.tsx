@@ -9,6 +9,7 @@ export default function ResetPassword() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,11 +20,16 @@ export default function ResetPassword() {
       return;
     }
 
-    const err = await updatePassword(password);
-    if (err) {
-      setError(err);
-    } else {
-      navigate("/");
+    setSubmitting(true);
+    try {
+      const err = await updatePassword(password);
+      if (err) {
+        setError(err);
+      } else {
+        navigate("/");
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -46,7 +52,9 @@ export default function ResetPassword() {
           minLength={6}
         />
         {error && <p className="error">{error}</p>}
-        <button type="submit">Update Password</button>
+        <button type="submit" disabled={submitting}>
+          {submitting ? "Updating..." : "Update Password"}
+        </button>
       </form>
     </div>
   );

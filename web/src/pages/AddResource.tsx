@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../lib/AuthContext";
+import { fetchWithAuth } from "../lib/supabase";
 
 const API = import.meta.env.VITE_API_URL || "http://api.localhost";
 
 export default function AddResource() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { session } = useAuth();
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [tagsInput, setTagsInput] = useState("");
@@ -21,21 +20,14 @@ export default function AddResource() {
       .map((t) => t.trim().toLowerCase())
       .filter(Boolean);
 
-    await fetch(`${API}/boards/${id}/resources`, {
+    await fetchWithAuth(`${API}/boards/${id}/resources`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.access_token}`,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url, title, tags }),
     });
 
     navigate(`/board/${id}`);
   };
-
-  if (!session) {
-    return <p className="empty">Please login to add resources.</p>;
-  }
 
   return (
     <div>

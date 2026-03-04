@@ -238,5 +238,34 @@ Supabase            → PostgreSQL + Auth         → rcjclulpdehdlukahnwb (us-e
 
 ---
 
+## Phase 6: Auth Flow UX Improvements
+
+### Goal
+Polish the authentication experience — add loading feedback, smart redirects, centralized route protection, username uniqueness, GitHub OAuth, and automatic session refresh.
+
+### What was done
+
+1. **Loading state on form submit** — Login and ResetPassword pages now show "Please wait..." / "Updating..." with disabled button while submitting. Prevents double-submits and gives visual feedback.
+
+2. **Return-to redirect** — Visiting a protected page while logged out redirects to `/login` with the intended destination stored in router state. After successful login, navigates back to that page instead of always going to `/`.
+
+3. **ProtectedRoute wrapper** — New `ProtectedRoute` component replaces duplicated `if (!session)` guards in MyBoards and AddResource. Shows nothing while auth is loading, redirects to `/login` with return-to state if no session, renders children otherwise. Routes wrapped in App.tsx.
+
+4. **Username uniqueness** — Created `profiles` table in Supabase with `username TEXT UNIQUE`, RLS policies (public read, owner insert/update). `signUp` checks for existing username before creating user, inserts profile row after. Handles race conditions via unique constraint catch.
+
+5. **GitHub OAuth login** — Added `signInWithGitHub` to AuthContext using Supabase OAuth. Login page has "Sign in with GitHub" button with dark styling. Return-to path stored in `sessionStorage` before OAuth redirect (router state doesn't survive full-page redirects). `useEffect` on Login detects session after OAuth return and redirects.
+
+6. **Session expiry handling** — New `fetchWithAuth` helper in supabase.ts attaches current token, on 401 refreshes session and retries once, on refresh failure signs out. MyBoards and AddResource use `fetchWithAuth` instead of raw `fetch` with manual Authorization headers. ProtectedRoute handles the redirect after signout.
+
+### Problems & decisions
+- **OAuth redirect loses router state**: Full-page redirect to GitHub means `location.state` is lost. Solved with `sessionStorage.setItem("auth_redirect", from)` before redirect, read and cleared on return.
+- **Username race condition**: Two users could check-then-insert the same username. Handled by catching Postgres unique constraint error (code 23505) as a fallback.
+- **No API changes needed**: All improvements are frontend-only. The API's JWT verification is provider-agnostic and works with both email/password and OAuth tokens.
+
+### Prerequisite (manual)
+GitHub OAuth requires creating a GitHub OAuth App and enabling the GitHub provider in Supabase dashboard. Not automated.
+
+---
+
 ## Repo: Vashirr01/azure (private)
 ## Branch: master

@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Feed from "./pages/Feed";
 import BoardView from "./pages/BoardView";
 import MyBoards from "./pages/MyBoards";
@@ -15,8 +16,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Feed />} />
           <Route path="/board/:id" element={<BoardView />} />
-          <Route path="/my/boards" element={<MyBoards />} />
-          <Route path="/my/boards/:id/add" element={<AddResource />} />
+          <Route path="/my/boards" element={<ProtectedRoute><MyBoards /></ProtectedRoute>} />
+          <Route path="/my/boards/:id/add" element={<ProtectedRoute><AddResource /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>

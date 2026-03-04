@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../lib/AuthContext";
+import { fetchWithAuth } from "../lib/supabase";
 
 const API = import.meta.env.VITE_API_URL || "http://api.localhost";
 
@@ -14,12 +15,12 @@ interface Board {
 }
 
 export default function MyBoards() {
-  const { session, user } = useAuth();
+  const { user } = useAuth();
   const [boards, setBoards] = useState<Board[]>([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
-  const fetchBoards = () => {
+  const loadBoards = () => {
     if (!user) return;
     fetch(`${API}/boards/by-user/${user.id}`)
       .then((r) => r.json())
@@ -28,38 +29,28 @@ export default function MyBoards() {
   };
 
   useEffect(() => {
-    fetchBoards();
+    loadBoards();
   }, [user]);
 
   const createBoard = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
 
-    await fetch(`${API}/boards`, {
+    await fetchWithAuth(`${API}/boards`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.access_token}`,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, description: description || undefined }),
     });
 
     setName("");
     setDescription("");
-    fetchBoards();
+    loadBoards();
   };
 
   const deleteBoard = async (id: string) => {
-    await fetch(`${API}/boards/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${session?.access_token}` },
-    });
-    fetchBoards();
+    await fetchWithAuth(`${API}/boards/${id}`, { method: "DELETE" });
+    loadBoards();
   };
-
-  if (!session) {
-    return <p className="empty">Please <Link to="/login" className="btn-link">login</Link> to manage your boards.</p>;
-  }
 
   return (
     <div>
