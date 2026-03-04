@@ -79,7 +79,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithGitHub = () => {
-    supabase.auth.signInWithOAuth({ provider: "github" });
+    supabase.auth.signInWithOAuth({
+      provider: "github",
+      options: { scopes: "user:email" },
+    });
   };
 
   const signOut = async () => {
