@@ -28,9 +28,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+      // Clean trailing # fragment left by OAuth callback
+      if (event === "SIGNED_IN" && window.location.hash) {
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
     });
 
     return () => subscription.unsubscribe();
