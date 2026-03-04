@@ -1,9 +1,13 @@
+import { Link } from "react-router-dom";
+
 interface Resource {
   id: string;
   url: string;
   title: string;
   tags: string[];
   createdAt: string;
+  username?: string | null;
+  board?: { id: string; name: string } | null;
 }
 
 export default function ResourceCard({ resource, onTagClick }: { resource: Resource; onTagClick?: (tag: string) => void }) {
@@ -20,6 +24,28 @@ export default function ResourceCard({ resource, onTagClick }: { resource: Resou
       />
       <h3>{resource.title}</h3>
       <span className="domain">{domain}</span>
+      {(resource.board || resource.username) && (
+        <div className="resource-meta">
+          {resource.board && (
+            <Link
+              to={`/board/${resource.board.id}`}
+              className="resource-board-link"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {resource.board.name}
+            </Link>
+          )}
+          {resource.username && (
+            <Link
+              to={`/user/${resource.username}`}
+              className="resource-user-link"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {resource.username}
+            </Link>
+          )}
+        </div>
+      )}
       {resource.tags.length > 0 && (
         <div className="tags">
           {resource.tags.map((tag) => (

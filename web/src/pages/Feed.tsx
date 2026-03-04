@@ -10,6 +10,8 @@ interface Resource {
   title: string;
   tags: string[];
   createdAt: string;
+  username?: string | null;
+  board?: { id: string; name: string } | null;
 }
 
 export default function Feed() {
@@ -17,12 +19,15 @@ export default function Feed() {
   const [resources, setResources] = useState<Resource[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
+  const [searchInput, setSearchInput] = useState(searchParams.get("q") || "");
   const tag = searchParams.get("tag") || "";
+  const q = searchParams.get("q") || "";
 
   useEffect(() => {
     const params = new URLSearchParams();
     params.set("page", String(page));
     if (tag) params.set("tag", tag);
+    if (q) params.set("q", q);
 
     fetch(`${API}/feed?${params}`)
       .then((r) => r.json())
@@ -31,26 +36,62 @@ export default function Feed() {
         setTotal(data.total);
       })
       .catch(() => setResources([]));
-  }, [page, tag]);
+  }, [page, tag, q]);
 
   const handleTagClick = (t: string) => {
     setPage(1);
-    setSearchParams(t ? { tag: t } : {});
+    const next: Record<string, string> = {};
+    if (t) next.tag = t;
+    if (q) next.q = q;
+    setSearchParams(next);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPage(1);
+    const next: Record<string, string> = {};
+    if (tag) next.tag = tag;
+    if (searchInput.trim()) next.q = searchInput.trim();
+    setSearchParams(next);
+  };
+
+  const clearSearch = () => {
+    setSearchInput("");
+    setPage(1);
+    const next: Record<string, string> = {};
+    if (tag) next.tag = tag;
+    setSearchParams(next);
   };
 
   const totalPages = Math.ceil(total / 20);
 
   return (
     <div>
-      {tag && (
+      <form onSubmit={handleSearch} className="search-bar">
+        <input
+          type="text"
+          placeholder="Search resources..."
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+        />
+        <button type="submit">Search</button>
+      </form>
+
+      {(tag || q) && (
         <div className="active-filter">
-          Filtering by: <strong>{tag}</strong>
-          <button onClick={() => handleTagClick("")} className="clear-filter">clear</button>
+          {tag && <>Filtering by tag: <strong>{tag}</strong></>}
+          {tag && q && " · "}
+          {q && <>Search: <strong>{q}</strong></>}
+          {tag && <button onClick={() => handleTagClick("")} className="clear-filter">clear tag</button>}
+          {q && <button onClick={clearSearch} className="clear-filter">clear search</button>}
         </div>
       )}
 
       {resources.length === 0 ? (
-        <p className="empty">No resources yet. {tag ? "Try clearing the filter." : "Be the first to share one!"}</p>
+        <p className="empty">
+          No resources found.{" "}
+          {tag || q ? "Try clearing filters." : "Be the first to share one!"}
+        </p>
       ) : (
         <div className="masonry">
           {resources.map((r) => (

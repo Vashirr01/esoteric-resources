@@ -322,5 +322,25 @@ The API change (`by-user` with `optionalAuth`) must be deployed for owners to se
 
 ---
 
+## Phase 9: Search Bar & Resource Card Metadata
+
+### Goal
+Add text search to the feed and show board/user attribution on resource cards with clickable links.
+
+### What was done
+
+1. **Feed API** (`api/src/routes/feed.ts`) — Added `q` query parameter for case-insensitive title search (Prisma `contains` + `mode: insensitive`). Feed now includes board name and username with each resource via Prisma `include` + raw SQL profiles lookup.
+
+2. **Search bar** (`web/src/pages/Feed.tsx`) — Text input + Search button above the feed. Search term stored in URL (`?q=`), combinable with tag filter (`?tag=ml&q=neural`). Separate "clear tag" and "clear search" buttons.
+
+3. **Resource card metadata** (`web/src/components/ResourceCard.tsx`) — Each card now shows the board name (links to `/board/:id`) and username (links to `/user/:username`) below the domain. Gracefully handles missing data (backwards-compatible with old API response).
+
+4. **CSS** — Search bar layout, resource metadata links with dot separator
+
+### Deploy note
+API changes (search + enriched response) need deploy to Render for full functionality. Until then, search bar renders but doesn't filter, and cards don't show board/user links.
+
+---
+
 ## Repo: Vashirr01/azure (private)
 ## Branch: master
