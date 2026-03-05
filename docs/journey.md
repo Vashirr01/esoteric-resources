@@ -342,5 +342,39 @@ API changes (search + enriched response) need deploy to Render for full function
 
 ---
 
+## Phase 10: UI Polish & Dark Mode
+
+### What was done
+
+1. **Feed loading & retry** — Feed now shows "Loading resources..." instead of "No resources found" while API is waking up. Auto-retries up to 2 times with 3s delay (handles Render free tier cold starts).
+
+2. **Dark mode** — CSS custom properties for all colors. `[data-theme="dark"]` with deep navy palette. `useTheme` hook persists to localStorage, respects `prefers-color-scheme`. Toggle button in header using lucide-react Sun/Moon icons.
+
+3. **Search bar redesign** — Removed submit button, search-on-type with 300ms debounce, centered and narrower input.
+
+4. **Infinite scroll** — Replaced pagination with scroll-triggered loading. Appends next page when user is within 300px of bottom.
+
+5. **Footer** — Simple footer with site name and GitHub link.
+
+6. **Profile photos** — Added `avatar_url` column to Supabase `profiles` table. Supabase Storage bucket `avatars` with RLS policies. Profile page shows circular avatar with camera overlay for upload. DiceBear thumbs avatars as defaults for seed users.
+
+7. **Avatars on cards & header** — Feed API returns `avatarUrl` from profiles join. ResourceCard shows small avatar next to username. Header shows logged-in user's avatar fetched from Supabase profiles.
+
+8. **Local seed data** — Prisma migration creates `profiles` table locally with seed data: 5 users, 9 boards, 22 resources with DiceBear avatars. Removed `VITE_API_URL` from `web/.env` so local dev uses `api.localhost`.
+
+9. **Site width** — Container widened from 960px to 1200px.
+
+### Problems & decisions
+- **Render cold start**: Free tier spins down after inactivity. Old code showed "No resources found" immediately. Fixed with loading state + retry.
+- **lucide-react in Docker**: Installing npm packages on host doesn't affect container. Need `docker compose up --build` to rebuild with new deps.
+- **`web/.env` pointed to production**: Local frontend was hitting Render API instead of local. Removed `VITE_API_URL` so it falls back to `http://api.localhost`.
+- **Profiles table local vs Supabase**: Created via Prisma migration (not `db/init.sql`) to avoid Prisma schema drift errors. Seed data included in migration SQL.
+- **Avatar consistency**: Header avatar comes from Supabase (for logged-in user), card avatars come from local API. Will be consistent once deployed to production.
+
+### Deploy note
+Push to master needed for: dark mode, infinite scroll, feed retry, avatar support on cards, search-on-type. Production API currently lacks `avatarUrl` in feed response.
+
+---
+
 ## Repo: Vashirr01/azure (private)
 ## Branch: master

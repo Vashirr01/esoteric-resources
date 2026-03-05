@@ -39,26 +39,30 @@ router.get("/", async (req, res) => {
 
     // Batch-fetch usernames from profiles table
     const userIds = [...new Set(resources.map((r) => r.userId))];
-    const profiles: { id: string; username: string }[] =
+    const profiles: { id: string; username: string; avatar_url: string | null }[] =
       userIds.length > 0
         ? await prisma.$queryRawUnsafe(
-            `SELECT id::text, username FROM profiles WHERE id::text IN (${userIds.map((_, i) => `$${i + 1}`).join(",")})`,
+            `SELECT id::text, username, avatar_url FROM profiles WHERE id::text IN (${userIds.map((_, i) => `$${i + 1}`).join(",")})`,
             ...userIds
           )
         : [];
 
-    const usernameMap = new Map(profiles.map((p) => [p.id, p.username]));
+    const profileMap = new Map(profiles.map((p) => [p.id, p]));
 
-    const enriched = resources.map((r) => ({
-      id: r.id,
-      url: r.url,
-      title: r.title,
-      tags: r.tags,
-      createdAt: r.createdAt,
-      userId: r.userId,
-      username: usernameMap.get(r.userId) || null,
-      board: r.boards[0]?.board || null,
-    }));
+    const enriched = resources.map((r) => {
+      const profile = profileMap.get(r.userId);
+      return {
+        id: r.id,
+        url: r.url,
+        title: r.title,
+        tags: r.tags,
+        createdAt: r.createdAt,
+        userId: r.userId,
+        username: profile?.username || null,
+        avatarUrl: profile?.avatar_url || null,
+        board: r.boards[0]?.board || null,
+      };
+    });
 
     res.json({ resources: enriched, total, page, limit });
   } catch (err) {

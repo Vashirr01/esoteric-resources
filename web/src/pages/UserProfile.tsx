@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
+import { Camera } from "lucide-react";
 import { useAuth } from "../lib/AuthContext";
 import { supabase } from "../lib/supabase";
 
@@ -10,6 +11,7 @@ interface Profile {
   username: string;
   bio: string | null;
   is_public: boolean;
+  avatar_url: string | null;
 }
 
 interface Board {
@@ -34,6 +36,9 @@ export default function UserProfile() {
   const [isPublic, setIsPublic] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
   const isOwner = user && profile && user.id === profile.id;
 
   useEffect(() => {
@@ -41,7 +46,7 @@ export default function UserProfile() {
 
     supabase
       .from("profiles")
-      .select("id, username, bio, is_public")
+      .select("id, username, bio, is_public, avatar_url")
       .eq("username", username)
       .maybeSingle()
       .then(({ data, error }) => {
@@ -83,6 +88,31 @@ export default function UserProfile() {
     setEditing(false);
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !profile) return;
+    setUploading(true);
+
+    const path = `${profile.id}/avatar`;
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(path, file, { upsert: true });
+
+    if (uploadError) {
+      setUploading(false);
+      return;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from("avatars")
+      .getPublicUrl(path);
+
+    const url = `${publicUrl}?t=${Date.now()}`;
+    await supabase.from("profiles").update({ avatar_url: url }).eq("id", profile.id);
+    setProfile({ ...profile, avatar_url: url });
+    setUploading(false);
+  };
+
   if (loading) return <p className="empty">Loading...</p>;
   if (notFound) return <p className="empty">User not found.</p>;
   if (!profile) return null;
@@ -100,6 +130,28 @@ export default function UserProfile() {
   return (
     <div>
       <div className="profile-header">
+        <div className="profile-avatar-wrapper" onClick={isOwner ? () => fileInputRef.current?.click() : undefined}>
+          {profile.avatar_url ? (
+            <img src={profile.avatar_url} alt={profile.username} className="profile-avatar" />
+          ) : (
+            <div className="profile-avatar profile-avatar-placeholder">
+              {profile.username[0].toUpperCase()}
+            </div>
+          )}
+          {isOwner && (
+            <div className="profile-avatar-overlay">
+              <Camera size={16} />
+            </div>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleAvatarUpload}
+            disabled={uploading}
+          />
+        </div>
         <div className="profile-info">
           <h2>{profile.username}</h2>
           {!editing && profile.bio && <p className="profile-bio">{profile.bio}</p>}

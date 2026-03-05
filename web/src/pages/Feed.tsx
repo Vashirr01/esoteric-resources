@@ -12,6 +12,7 @@ interface Resource {
   tags: string[];
   createdAt: string;
   username?: string | null;
+  avatarUrl?: string | null;
   board?: { id: string; name: string } | null;
 }
 

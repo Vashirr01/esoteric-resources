@@ -7,6 +7,7 @@ interface Resource {
   tags: string[];
   createdAt: string;
   username?: string | null;
+  avatarUrl?: string | null;
   board?: { id: string; name: string } | null;
 }
 
@@ -57,6 +58,9 @@ export default function ResourceCard({ resource, onTagClick }: { resource: Resou
               className="resource-user-link"
               onClick={(e) => e.stopPropagation()}
             >
+              {resource.avatarUrl && (
+                <img src={resource.avatarUrl} alt="" className="resource-meta-avatar" />
+              )}
               {resource.username}
             </Link>
           )}
