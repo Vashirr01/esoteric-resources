@@ -55,6 +55,35 @@ router.get("/by-user/:userId", optionalAuth, async (req: AuthRequest, res) => {
   }
 });
 
+// GET /boards/my — current user's boards (with optional duplicate check)
+router.get("/my", requireAuth, async (req: AuthRequest, res) => {
+  const userId = req.userId as string;
+  const url = req.query.url as string | undefined;
+
+  try {
+    const boards = await prisma.board.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        resources: url
+          ? { where: { resource: { url } }, select: { resourceId: true }, take: 1 }
+          : false,
+      },
+    });
+
+    const result = boards.map((b: any) => ({
+      id: b.id,
+      name: b.name,
+      ...(url ? { hasDuplicate: b.resources?.length > 0 } : {}),
+    }));
+
+    res.json(result);
+  } catch (err) {
+    console.error("My boards error:", err);
+    res.status(500).json({ error: "Failed to fetch boards" });
+  }
+});
+
 // --- Auth-required routes below ---
 
 // POST /boards — create board
@@ -162,6 +191,59 @@ router.post("/:id/resources", requireAuth, async (req: AuthRequest, res) => {
     res.status(201).json(resource);
   } catch (err) {
     res.status(500).json({ error: "Failed to add resource" });
+  }
+});
+
+// POST /boards/:id/save — save (copy) a resource to your board
+router.post("/:id/save", requireAuth, async (req: AuthRequest, res) => {
+  const userId = req.userId as string;
+  const boardId = req.params.id as string;
+  const { resourceId } = req.body;
+
+  if (!resourceId) {
+    res.status(400).json({ error: "resourceId is required" });
+    return;
+  }
+
+  try {
+    const board = await prisma.board.findFirst({ where: { id: boardId, userId } });
+    if (!board) {
+      res.status(404).json({ error: "Board not found" });
+      return;
+    }
+
+    const original = await prisma.resource.findUnique({ where: { id: resourceId } });
+    if (!original) {
+      res.status(404).json({ error: "Resource not found" });
+      return;
+    }
+
+    // Check if board already has a resource with the same URL
+    const existing = await prisma.resource.findFirst({
+      where: {
+        url: original.url,
+        boards: { some: { boardId } },
+      },
+    });
+    if (existing) {
+      res.status(409).json({ error: "Resource already in this board" });
+      return;
+    }
+
+    const copy = await prisma.resource.create({
+      data: {
+        url: original.url,
+        title: original.title,
+        tags: original.tags,
+        userId,
+        boards: { create: { boardId } },
+      },
+    });
+
+    res.status(201).json(copy);
+  } catch (err) {
+    console.error("Save error:", err);
+    res.status(500).json({ error: "Failed to save resource" });
   }
 });
 

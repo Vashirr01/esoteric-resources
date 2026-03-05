@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { Sun, Moon } from "lucide-react";
 import { useAuth } from "../lib/AuthContext";
 import { useTheme } from "../lib/useTheme";
-import { supabase } from "../lib/supabase";
+
+const API = import.meta.env.VITE_API_URL || "http://api.localhost";
 
 export default function Header() {
   const { session, user, signOut } = useAuth();
@@ -13,14 +14,12 @@ export default function Header() {
   const username = user?.user_metadata?.username || user?.email;
 
   useEffect(() => {
-    if (!user) { setAvatarUrl(null); return; }
-    supabase
-      .from("profiles")
-      .select("avatar_url")
-      .eq("id", user.id)
-      .maybeSingle()
-      .then(({ data }) => setAvatarUrl(data?.avatar_url || null));
-  }, [user]);
+    if (!user || !username) { setAvatarUrl(null); return; }
+    fetch(`${API}/profiles/${encodeURIComponent(username)}`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => setAvatarUrl(data?.avatar_url || null))
+      .catch(() => setAvatarUrl(null));
+  }, [user, username]);
 
   return (
     <header className="header">

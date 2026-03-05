@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import SaveDropdown from "./SaveDropdown";
 
 interface Resource {
   id: string;
@@ -23,6 +24,7 @@ export default function ResourceCard({ resource, onTagClick }: { resource: Resou
         className="resource-favicon"
         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
       />
+      <SaveDropdown resourceId={resource.id} resourceUrl={resource.url} />
       <h3>{resource.title}</h3>
       <span className="domain">{domain}</span>
       {resource.tags.length > 0 && (

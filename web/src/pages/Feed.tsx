@@ -124,7 +124,11 @@ export default function Feed() {
         </div>
       )}
 
-      {loading && <p className="empty">Loading resources...</p>}
+      {loading && (
+        <div className="loader">
+          <div className="spinner" />
+        </div>
+      )}
     </div>
   );
 }

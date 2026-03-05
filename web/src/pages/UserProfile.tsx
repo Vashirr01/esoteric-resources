@@ -44,27 +44,24 @@ export default function UserProfile() {
   useEffect(() => {
     if (!username) return;
 
-    supabase
-      .from("profiles")
-      .select("id, username, bio, is_public, avatar_url")
-      .eq("username", username)
-      .maybeSingle()
-      .then(({ data, error }) => {
-        if (error || !data) {
-          setNotFound(true);
-          setLoading(false);
-          return;
-        }
+    fetch(`${API}/profiles/${encodeURIComponent(username)}`)
+      .then((r) => {
+        if (!r.ok) throw new Error("not found");
+        return r.json();
+      })
+      .then((data) => {
         setProfile(data);
         setBio(data.bio || "");
         setIsPublic(data.is_public);
 
-        // Fetch boards
-        fetch(`${API}/boards/by-user/${data.id}`)
+        return fetch(`${API}/boards/by-user/${data.id}`)
           .then((r) => (r.ok ? r.json() : []))
-          .then(setBoards)
-          .finally(() => setLoading(false));
-      });
+          .then(setBoards);
+      })
+      .catch(() => {
+        setNotFound(true);
+      })
+      .finally(() => setLoading(false));
   }, [username]);
 
   const handleSave = async () => {

@@ -376,5 +376,29 @@ Push to master needed for: dark mode, infinite scroll, feed retry, avatar suppor
 
 ---
 
+## Phase 11: Bookmarks / Save to Board
+
+### Goal
+Let users save any public resource to one of their own boards (like Pinterest repins). Saves create an independent copy of the resource.
+
+### What was built
+
+1. **API: `POST /boards/:id/save`** — Copies a resource (new Resource row + BoardResource link) to the user's board. Returns 409 if the board already has a resource with the same URL.
+
+2. **API: `GET /boards/my`** — Returns the logged-in user's boards. Accepts optional `?url=` param to flag which boards already contain that URL (`hasDuplicate: true`).
+
+3. **API: `GET /profiles/:username`** — New endpoint so frontend reads profiles from the API (same data source as feed) instead of directly from Supabase. Fixes avatar mismatch between profile page and resource cards on local dev.
+
+4. **SaveDropdown component** — Bookmark icon (lucide `Bookmark`) on top-right of every resource card. Click opens a dropdown listing user's boards. Boards with the same URL already saved show a checkmark (disabled). "New board" option at bottom with inline text input for quick board creation + auto-save.
+
+5. **Header/Profile consistency** — Header avatar fetch moved from Supabase direct query to API endpoint, so all avatar reads go through the same data source.
+
+### Design decisions
+- **Copy, not link**: Saving creates an independent Resource row owned by the saving user. Original owner deleting their resource doesn't affect saves.
+- **Duplicate prevention**: Checked by URL match within the target board, not by resource ID.
+- **Bookmark icon visibility**: Only appears on card hover to keep the UI clean.
+
+---
+
 ## Repo: Vashirr01/azure (private)
 ## Branch: master
