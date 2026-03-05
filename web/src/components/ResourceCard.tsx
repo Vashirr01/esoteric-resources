@@ -24,6 +24,22 @@ export default function ResourceCard({ resource, onTagClick }: { resource: Resou
       />
       <h3>{resource.title}</h3>
       <span className="domain">{domain}</span>
+      {resource.tags.length > 0 && (
+        <div className="tags">
+          {resource.tags.map((tag) => (
+            <button
+              key={tag}
+              className="tag"
+              onClick={(e) => {
+                e.preventDefault();
+                onTagClick?.(tag);
+              }}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      )}
       {(resource.board || resource.username) && (
         <div className="resource-meta">
           {resource.board && (
@@ -44,22 +60,6 @@ export default function ResourceCard({ resource, onTagClick }: { resource: Resou
               {resource.username}
             </Link>
           )}
-        </div>
-      )}
-      {resource.tags.length > 0 && (
-        <div className="tags">
-          {resource.tags.map((tag) => (
-            <button
-              key={tag}
-              className="tag"
-              onClick={(e) => {
-                e.preventDefault();
-                onTagClick?.(tag);
-              }}
-            >
-              {tag}
-            </button>
-          ))}
         </div>
       )}
     </a>

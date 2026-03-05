@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Sun, Moon } from "lucide-react";
 import { useAuth } from "../lib/AuthContext";
 import { useTheme } from "../lib/useTheme";
 
@@ -11,7 +12,7 @@ export default function Header() {
       <Link to="/" className="logo">esoteric-resources</Link>
       <nav>
         <button onClick={toggle} className="theme-toggle" title="Toggle dark mode">
-          {theme === "dark" ? "\u2600\uFE0F" : "\u{1F319}"}
+          {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
         </button>
         {session ? (
           <>

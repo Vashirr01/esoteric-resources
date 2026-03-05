@@ -24,6 +24,10 @@ export default function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </main>
+      <footer className="footer">
+        <span>esoteric-resources</span>
+        <a href="https://github.com/Vashirr01/azure" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </footer>
     </div>
   );
 }
