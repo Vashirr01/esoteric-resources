@@ -4,10 +4,48 @@
   box-sizing: border-box;
 }
 
+:root {
+  --bg: #f0f0f0;
+  --bg-card: #fff;
+  --text: #333;
+  --text-secondary: #555;
+  --text-muted: #888;
+  --text-faint: #999;
+  --text-link-hover: #000;
+  --border: #ddd;
+  --tag-bg: #f0f0f0;
+  --tag-bg-hover: #e0e0e0;
+  --btn-bg: #333;
+  --btn-text: #fff;
+  --input-border: #ccc;
+  --danger: #c00;
+  --meta-sep: #ccc;
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] {
+  --bg: #1a1a2e;
+  --bg-card: #16213e;
+  --text: #e0e0e0;
+  --text-secondary: #b0b0b0;
+  --text-muted: #888;
+  --text-faint: #666;
+  --text-link-hover: #fff;
+  --border: #2a2a4a;
+  --tag-bg: #2a2a4a;
+  --tag-bg-hover: #3a3a5a;
+  --btn-bg: #4a4a6a;
+  --btn-text: #e0e0e0;
+  --input-border: #3a3a5a;
+  --danger: #f55;
+  --meta-sep: #444;
+  --shadow: rgba(0, 0, 0, 0.3);
+}
+
 body {
   font-family: system-ui, -apple-system, sans-serif;
-  background: #f0f0f0;
-  color: #333;
+  background: var(--bg);
+  color: var(--text);
 }
 
 .container {
@@ -23,13 +61,13 @@ body {
   align-items: center;
   padding: 1rem 0;
   margin-bottom: 1.5rem;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--border);
 }
 
 .logo {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #333;
+  color: var(--text);
   text-decoration: none;
 }
 
@@ -41,25 +79,36 @@ body {
 }
 
 .header nav a {
-  color: #555;
+  color: var(--text-secondary);
   text-decoration: none;
 }
 
 .header nav a:hover {
-  color: #000;
+  color: var(--text-link-hover);
 }
 
 .username {
-  color: #888;
+  color: var(--text-muted);
 }
 
 .btn-link {
   background: none;
   border: none;
-  color: #555;
+  color: var(--text-secondary);
   cursor: pointer;
   font-size: inherit;
   text-decoration: underline;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.25rem 0.4rem;
+  line-height: 1;
 }
 
 /* Search Bar */
@@ -72,15 +121,17 @@ body {
 .search-bar input {
   flex: 1;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 4px;
   font-size: 0.9rem;
+  background: var(--bg-card);
+  color: var(--text);
 }
 
 .search-bar button {
   padding: 0.5rem 1rem;
-  background: #333;
-  color: #fff;
+  background: var(--btn-bg);
+  color: var(--btn-text);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -105,8 +156,8 @@ body {
 .resource-card {
   display: block;
   position: relative;
-  background: #fff;
-  border: 1px solid #ddd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1rem;
   padding-top: 2rem;
@@ -127,7 +178,7 @@ body {
 }
 
 .resource-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px var(--shadow);
 }
 
 .resource-card h3 {
@@ -138,7 +189,7 @@ body {
 
 .domain {
   font-size: 0.75rem;
-  color: #888;
+  color: var(--text-muted);
 }
 
 .tags {
@@ -151,15 +202,15 @@ body {
 .tag {
   font-size: 0.7rem;
   padding: 0.125rem 0.5rem;
-  background: #f0f0f0;
-  border: 1px solid #ddd;
+  background: var(--tag-bg);
+  border: 1px solid var(--border);
   border-radius: 12px;
   cursor: pointer;
-  color: #555;
+  color: var(--text-secondary);
 }
 
 .tag:hover {
-  background: #e0e0e0;
+  background: var(--tag-bg-hover);
 }
 
 /* Resource metadata (board + user links) */
@@ -173,27 +224,27 @@ body {
 
 .resource-board-link,
 .resource-user-link {
-  color: #777;
+  color: var(--text-muted);
   text-decoration: none;
 }
 
 .resource-board-link:hover,
 .resource-user-link:hover {
-  color: #333;
+  color: var(--text);
   text-decoration: underline;
 }
 
 .resource-meta > a + a::before {
   content: " · ";
-  color: #ccc;
+  color: var(--meta-sep);
 }
 
 /* Active Filter */
 .active-filter {
   margin-bottom: 1rem;
   padding: 0.5rem 0.75rem;
-  background: #fff;
-  border: 1px solid #ddd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 0.875rem;
 }
@@ -202,7 +253,7 @@ body {
   margin-left: 0.5rem;
   background: none;
   border: none;
-  color: #c00;
+  color: var(--danger);
   cursor: pointer;
   text-decoration: underline;
   font-size: inherit;
@@ -220,9 +271,10 @@ body {
 
 .pagination button {
   padding: 0.375rem 0.75rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 4px;
-  background: #fff;
+  background: var(--bg-card);
+  color: var(--text);
   cursor: pointer;
 }
 
@@ -241,13 +293,13 @@ body {
 }
 
 .board-header p {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.875rem;
 }
 
 .resource-count {
   font-size: 0.75rem;
-  color: #888;
+  color: var(--text-muted);
 }
 
 /* Board List */
@@ -256,8 +308,8 @@ body {
 }
 
 .board-item {
-  background: #fff;
-  border: 1px solid #ddd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 0.75rem;
@@ -268,7 +320,7 @@ body {
 }
 
 .board-item a {
-  color: #333;
+  color: var(--text);
   text-decoration: none;
 }
 
@@ -278,7 +330,7 @@ body {
 
 .board-item p {
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-top: 0.25rem;
 }
 
@@ -293,15 +345,17 @@ body {
 
 .create-form input {
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 4px;
   font-size: 1rem;
+  background: var(--bg-card);
+  color: var(--text);
 }
 
 .create-form > button {
   padding: 0.5rem;
-  background: #333;
-  color: #fff;
+  background: var(--btn-bg);
+  color: var(--btn-text);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -316,7 +370,7 @@ body {
 /* GitHub OAuth */
 .auth-divider {
   text-align: center;
-  color: #999;
+  color: var(--text-faint);
   font-size: 0.875rem;
   margin: 0.75rem 0;
   max-width: 500px;
@@ -337,6 +391,14 @@ body {
 
 .github-btn:hover {
   background: #1b1f23;
+}
+
+[data-theme="dark"] .github-btn {
+  background: #484f58;
+}
+
+[data-theme="dark"] .github-btn:hover {
+  background: #5a6270;
 }
 
 .github-btn:disabled {
@@ -361,7 +423,7 @@ body {
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: #888;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 0.25rem;
   display: flex;
@@ -369,7 +431,7 @@ body {
 }
 
 .password-toggle:hover {
-  color: #333;
+  color: var(--text);
 }
 
 /* Actions */
@@ -381,28 +443,28 @@ body {
 
 .btn {
   padding: 0.25rem 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 4px;
-  background: #fff;
+  background: var(--bg-card);
   cursor: pointer;
   font-size: 0.8rem;
   text-decoration: none;
-  color: #333;
+  color: var(--text);
 }
 
 .delete {
   padding: 0.25rem 0.5rem;
-  border: 1px solid #c00;
+  border: 1px solid var(--danger);
   border-radius: 4px;
-  background: #fff;
+  background: var(--bg-card);
   cursor: pointer;
   font-size: 0.8rem;
-  color: #c00;
+  color: var(--danger);
 }
 
 /* Utilities */
 .empty {
-  color: #999;
+  color: var(--text-faint);
   text-align: center;
   margin-top: 3rem;
 }
@@ -412,14 +474,14 @@ h2 {
 }
 
 .error {
-  color: #c00;
+  color: var(--danger);
   font-size: 0.875rem;
 }
 
 .toggle-auth {
   margin-top: 0.5rem;
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 /* User Profile */
@@ -429,8 +491,8 @@ h2 {
   align-items: flex-start;
   margin-bottom: 1rem;
   padding: 1.25rem;
-  background: #fff;
-  border: 1px solid #ddd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 8px;
 }
 
@@ -439,13 +501,13 @@ h2 {
 }
 
 .profile-bio {
-  color: #555;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   white-space: pre-wrap;
 }
 
 .profile-bio-empty {
-  color: #aaa;
+  color: var(--text-faint);
   font-size: 0.875rem;
   font-style: italic;
 }
@@ -454,8 +516,8 @@ h2 {
   display: inline-block;
   margin-top: 0.375rem;
   font-size: 0.75rem;
-  color: #999;
-  border: 1px solid #ddd;
+  color: var(--text-faint);
+  border: 1px solid var(--border);
   border-radius: 4px;
   padding: 0.125rem 0.375rem;
 }
@@ -466,7 +528,7 @@ h2 {
 }
 
 .profile-private p {
-  color: #999;
+  color: var(--text-faint);
   margin-top: 0.5rem;
 }
 
@@ -483,16 +545,18 @@ h2 {
   flex-direction: column;
   gap: 0.25rem;
   font-size: 0.875rem;
-  color: #555;
+  color: var(--text-secondary);
 }
 
 .profile-edit textarea {
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 4px;
   font-family: inherit;
   font-size: 0.9rem;
   resize: vertical;
+  background: var(--bg-card);
+  color: var(--text);
 }
 
 .profile-checkbox {
@@ -507,23 +571,23 @@ h2 {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: #555;
+  color: var(--text-secondary);
 }
 
 .board-private-badge {
   margin-left: 0.5rem;
   font-size: 0.7rem;
-  color: #999;
-  border: 1px solid #ddd;
+  color: var(--text-faint);
+  border: 1px solid var(--border);
   border-radius: 4px;
   padding: 0.0625rem 0.375rem;
 }
 
 .username-link {
-  color: #888;
+  color: var(--text-muted);
   text-decoration: none;
 }
 
 .username-link:hover {
-  color: #333;
+  color: var(--text);
 }

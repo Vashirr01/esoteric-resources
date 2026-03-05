@@ -26,7 +26,7 @@ Production (Render + Supabase):
 ```
 
 - **API** (`api/`): Express + TypeScript + Prisma ORM. Routes: `/health`, `/feed` (public), `/boards` (CRUD + resource management).
-- **Frontend** (`web/`): React 19 + Vite + TypeScript + react-router-dom. Pages: Feed (`/`), Board View (`/board/:id`), My Boards (`/my/boards`), Add Resource (`/my/boards/:id/add`), Login (`/login`).
+- **Frontend** (`web/`): React 19 + Vite + TypeScript + react-router-dom. Pages: Feed (`/`), Board View (`/board/:id`), User Profile (`/user/:username`), My Boards (`/my/boards`), Add Resource (`/my/boards/:id/add`), Login (`/login`), Reset Password (`/reset-password`). Protected routes (`/my/*`) wrapped in `ProtectedRoute` component.
 - **Auth**: Supabase Auth in production (ES256 JWTs via JWKS). Keycloak locally. API is provider-agnostic — uses configurable `JWKS_URI` env var for JWT verification.
 - **Database**: PostgreSQL with Prisma. Keycloak uses separate `keycloak` schema locally (created by `db/init.sql`).
 - **Infra**: Traefik reverse proxy routes by hostname in dev. `render.yaml` blueprint for Render deployment. Terraform in `terraform/` for future Azure deployment.
@@ -73,6 +73,8 @@ Three Prisma models in `api/prisma/schema.prisma`:
 
 Orphaned resources are auto-deleted when removed from their last board.
 
+Additionally, a `profiles` table exists in Supabase (not in Prisma schema) with `id`, `username` (unique), `bio`, `is_public`. Managed directly via Supabase client with RLS policies. Used for user profile pages.
+
 ## Auth Pattern
 
 Two middleware functions in `api/src/middleware/auth.ts`:
@@ -81,7 +83,9 @@ Two middleware functions in `api/src/middleware/auth.ts`:
 
 JWT verification uses `jwks-rsa` with configurable `JWKS_URI` env var. Supports both RS256 (Keycloak) and ES256 (Supabase) algorithms. User ID comes from the JWT `sub` claim.
 
-Frontend auth uses `@supabase/supabase-js` via `AuthContext.tsx` (React context providing session, signIn, signUp, signOut). Note: `keycloak-js` is still in web dependencies but unused in production.
+Frontend auth uses `@supabase/supabase-js` via `AuthContext.tsx` (React context providing session, signIn, signUp, signInWithGitHub, signOut). Note: `keycloak-js` is still in web dependencies but unused in production.
+
+For authenticated API calls from the frontend, use `fetchWithAuth` from `web/src/lib/supabase.ts` — it attaches the session token, auto-refreshes on 401, and signs out if refresh fails. Don't use raw `fetch` with manual Authorization headers.
 
 ## Environment
 

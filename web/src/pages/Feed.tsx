@@ -19,23 +19,41 @@ export default function Feed() {
   const [resources, setResources] = useState<Resource[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const [searchInput, setSearchInput] = useState(searchParams.get("q") || "");
   const tag = searchParams.get("tag") || "";
   const q = searchParams.get("q") || "";
 
   useEffect(() => {
+    let cancelled = false;
     const params = new URLSearchParams();
     params.set("page", String(page));
     if (tag) params.set("tag", tag);
     if (q) params.set("q", q);
 
-    fetch(`${API}/feed?${params}`)
-      .then((r) => r.json())
-      .then((data) => {
-        setResources(data.resources);
-        setTotal(data.total);
-      })
-      .catch(() => setResources([]));
+    const fetchFeed = (attempt: number) => {
+      setLoading(true);
+      fetch(`${API}/feed?${params}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (cancelled) return;
+          setResources(data.resources);
+          setTotal(data.total);
+          setLoading(false);
+        })
+        .catch(() => {
+          if (cancelled) return;
+          if (attempt < 2) {
+            setTimeout(() => fetchFeed(attempt + 1), 3000);
+          } else {
+            setResources([]);
+            setLoading(false);
+          }
+        });
+    };
+
+    fetchFeed(0);
+    return () => { cancelled = true; };
   }, [page, tag, q]);
 
   const handleTagClick = (t: string) => {
@@ -87,7 +105,9 @@ export default function Feed() {
         </div>
       )}
 
-      {resources.length === 0 ? (
+      {loading ? (
+        <p className="empty">Loading resources...</p>
+      ) : resources.length === 0 ? (
         <p className="empty">
           No resources found.{" "}
           {tag || q ? "Try clearing filters." : "Be the first to share one!"}
