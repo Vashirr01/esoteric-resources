@@ -4,6 +4,56 @@ import { requireAuth, optionalAuth, AuthRequest } from "../middleware/auth";
 
 const router = Router();
 
+// GET /boards/my — current user's boards (with optional duplicate check)
+// MUST be before /:id to avoid "my" matching as an id param
+router.get("/my", requireAuth, async (req: AuthRequest, res) => {
+  const userId = req.userId as string;
+  const url = req.query.url as string | undefined;
+
+  try {
+    const boards = await prisma.board.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        resources: url
+          ? { where: { resource: { url } }, select: { resourceId: true }, take: 1 }
+          : false,
+      },
+    });
+
+    const result = boards.map((b: any) => ({
+      id: b.id,
+      name: b.name,
+      ...(url ? { hasDuplicate: b.resources?.length > 0 } : {}),
+    }));
+
+    res.json(result);
+  } catch (err) {
+    console.error("My boards error:", err);
+    res.status(500).json({ error: "Failed to fetch boards" });
+  }
+});
+
+// GET /boards/by-user/:userId — public boards for a user (or all boards if owner)
+router.get("/by-user/:userId", optionalAuth, async (req: AuthRequest, res) => {
+  const userId = req.params.userId as string;
+  const isOwner = req.userId === userId;
+
+  try {
+    const boards = await prisma.board.findMany({
+      where: { userId, ...(isOwner ? {} : { isPublic: true }) },
+      orderBy: { createdAt: "desc" },
+      include: {
+        _count: { select: { resources: true } },
+      },
+    });
+
+    res.json(boards);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch user boards" });
+  }
+});
+
 // GET /boards/:id — public if board is public
 router.get("/:id", optionalAuth, async (req: AuthRequest, res) => {
   const id = req.params.id as string;
@@ -32,55 +82,6 @@ router.get("/:id", optionalAuth, async (req: AuthRequest, res) => {
     res.json(board);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch board" });
-  }
-});
-
-// GET /boards/by-user/:userId — public boards for a user (or all boards if owner)
-router.get("/by-user/:userId", optionalAuth, async (req: AuthRequest, res) => {
-  const userId = req.params.userId as string;
-  const isOwner = req.userId === userId;
-
-  try {
-    const boards = await prisma.board.findMany({
-      where: { userId, ...(isOwner ? {} : { isPublic: true }) },
-      orderBy: { createdAt: "desc" },
-      include: {
-        _count: { select: { resources: true } },
-      },
-    });
-
-    res.json(boards);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch user boards" });
-  }
-});
-
-// GET /boards/my — current user's boards (with optional duplicate check)
-router.get("/my", requireAuth, async (req: AuthRequest, res) => {
-  const userId = req.userId as string;
-  const url = req.query.url as string | undefined;
-
-  try {
-    const boards = await prisma.board.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-      include: {
-        resources: url
-          ? { where: { resource: { url } }, select: { resourceId: true }, take: 1 }
-          : false,
-      },
-    });
-
-    const result = boards.map((b: any) => ({
-      id: b.id,
-      name: b.name,
-      ...(url ? { hasDuplicate: b.resources?.length > 0 } : {}),
-    }));
-
-    res.json(result);
-  } catch (err) {
-    console.error("My boards error:", err);
-    res.status(500).json({ error: "Failed to fetch boards" });
   }
 });
 
