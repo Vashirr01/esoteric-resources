@@ -55,6 +55,8 @@ router.get("/", async (req, res) => {
         id: r.id,
         url: r.url,
         title: r.title,
+        description: r.description || null,
+        imageUrl: r.imageUrl || null,
         tags: r.tags,
         createdAt: r.createdAt,
         userId: r.userId,

@@ -9,6 +9,8 @@ interface Resource {
   id: string;
   url: string;
   title: string;
+  description?: string | null;
+  imageUrl?: string | null;
   tags: string[];
   createdAt: string;
   username?: string | null;

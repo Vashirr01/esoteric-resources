@@ -400,5 +400,26 @@ Let users save any public resource to one of their own boards (like Pinterest re
 
 ---
 
+## Phase 12: Link Previews
+
+### Goal
+Auto-fetch OG metadata when adding a URL. Display description and image on resource cards for a richer feed.
+
+### What was built
+
+1. **API: `GET /meta?url=...`** — Server-side fetch of URL, parses `og:title`, `og:description`, `og:image` (falls back to `<title>` tag). 5s timeout, reads first 50KB only. Resolves relative image URLs.
+
+2. **Schema update** — Added `description` (optional) and `imageUrl` (optional) to Resource model. Migration adds columns to existing table.
+
+3. **AddResource page** — Debounced auto-fetch (500ms) when user pastes a URL. Title, description auto-fill (editable). Image preview shown if OG image found.
+
+4. **ResourceCard** — Shows OG image as thumbnail above title, description as 2-line truncated snippet below domain.
+
+5. **Save/copy** — description and imageUrl are copied when saving a resource to another board.
+
+6. **Route ordering fix** — `GET /boards/my` was being caught by `GET /boards/:id` (Express matched "my" as an id). Moved specific routes above parameterized ones.
+
+---
+
 ## Repo: Vashirr01/azure (private)
 ## Branch: master

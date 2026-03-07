@@ -8,12 +8,14 @@ datasource db {
 }
 
 model Resource {
-  id        String   @id @default(uuid())
-  url       String
-  title     String
-  tags      String[]
-  userId    String
-  createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  url         String
+  title       String
+  description String?
+  imageUrl    String?
+  tags        String[]
+  userId      String
+  createdAt   DateTime @default(now())
 
   boards BoardResource[]
 

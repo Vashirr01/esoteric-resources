@@ -162,7 +162,7 @@ router.delete("/:id", requireAuth, async (req: AuthRequest, res) => {
 router.post("/:id/resources", requireAuth, async (req: AuthRequest, res) => {
   const userId = req.userId as string;
   const boardId = req.params.id as string;
-  const { url, title, tags } = req.body;
+  const { url, title, description, imageUrl, tags } = req.body;
 
   if (!url || !title) {
     res.status(400).json({ error: "url and title are required" });
@@ -181,6 +181,8 @@ router.post("/:id/resources", requireAuth, async (req: AuthRequest, res) => {
       data: {
         url,
         title,
+        description: description || null,
+        imageUrl: imageUrl || null,
         tags: tags || [],
         userId,
         boards: {
@@ -235,6 +237,8 @@ router.post("/:id/save", requireAuth, async (req: AuthRequest, res) => {
       data: {
         url: original.url,
         title: original.title,
+        description: original.description,
+        imageUrl: original.imageUrl,
         tags: original.tags,
         userId,
         boards: { create: { boardId } },

@@ -5,6 +5,8 @@ interface Resource {
   id: string;
   url: string;
   title: string;
+  description?: string | null;
+  imageUrl?: string | null;
   tags: string[];
   createdAt: string;
   username?: string | null;
@@ -25,8 +27,19 @@ export default function ResourceCard({ resource, onTagClick }: { resource: Resou
         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
       />
       <SaveDropdown resourceId={resource.id} resourceUrl={resource.url} />
+      {resource.imageUrl && (
+        <img
+          src={resource.imageUrl}
+          alt=""
+          className="resource-image"
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+        />
+      )}
       <h3>{resource.title}</h3>
       <span className="domain">{domain}</span>
+      {resource.description && (
+        <p className="resource-description">{resource.description}</p>
+      )}
       {resource.tags.length > 0 && (
         <div className="tags">
           {resource.tags.map((tag) => (
