@@ -26,7 +26,7 @@ export default function App() {
       </main>
       <footer className="footer">
         <span>esoteric-resources</span>
-        <a href="https://github.com/Vashirr01/azure" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://github.com/Vashirr01/esoteric-resources" target="_blank" rel="noopener noreferrer">GitHub</a>
       </footer>
     </div>
   );

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Journey
 
-Full project history, decisions, problems, and fixes documented in [`docs/journey.md`](docs/journey.md).
+Full project history, decisions, problems, and fixes documented in [`docs/journey.md`](docs/journey.md). Active and proposed work lives in [`docs/plans/`](docs/plans/).
 
 ## Project
 
@@ -25,7 +25,7 @@ Production (Render + Supabase):
   Supabase (rcjclulpdehdlukahnwb)      → PostgreSQL + Auth (us-east-1)
 ```
 
-- **API** (`api/`): Express + TypeScript + Prisma ORM. Routes: `/health`, `/feed` (public), `/boards` (CRUD + resource management).
+- **API** (`api/`): Express + TypeScript + Prisma ORM. Routes: `/health`, `/feed` (public), `/boards` (CRUD + resource management), `/profiles/:username` (public profile lookup, read-only), `/meta?url=` (OpenGraph metadata fetch for link previews, with 50KB/5s caps).
 - **Frontend** (`web/`): React 19 + Vite + TypeScript + react-router-dom. Pages: Feed (`/`), Board View (`/board/:id`), User Profile (`/user/:username`), My Boards (`/my/boards`), Add Resource (`/my/boards/:id/add`), Login (`/login`), Reset Password (`/reset-password`). Protected routes (`/my/*`) wrapped in `ProtectedRoute` component.
 - **Auth**: Supabase Auth in production (ES256 JWTs via JWKS). Keycloak locally. API is provider-agnostic — uses configurable `JWKS_URI` env var for JWT verification.
 - **Database**: PostgreSQL with Prisma. Keycloak uses separate `keycloak` schema locally (created by `db/init.sql`).
@@ -67,7 +67,7 @@ No test framework or lint configuration is set up yet.
 ## Data Model
 
 Three Prisma models in `api/prisma/schema.prisma`:
-- **Resource**: url, title, tags (string array), userId
+- **Resource**: url, title, description, imageUrl, tags (string array), userId
 - **Board**: name, description, isPublic (default true), userId
 - **BoardResource**: join table (boardId + resourceId composite key, cascade deletes)
 
