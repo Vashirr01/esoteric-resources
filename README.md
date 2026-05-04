@@ -1,6 +1,6 @@
 # esoteric-resources
 
-A Pinterest-like aggregator for the corners of the internet that don't fit a tweet — CS learning materials, research papers, mathematical models, lecture notes, and other "esoteric" resources worth keeping around. Save links into boards, tag them, and share boards publicly.
+Curate the corners of the internet that don't fit a tweet. Save links to CS learning materials, papers, lecture notes, and other "esoteric" resources into boards you can keep private or share publicly.
 
 **Live:** [esoteric-resources-web.onrender.com](https://esoteric-resources-web.onrender.com)
 
